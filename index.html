@@ -344,7 +344,21 @@ function doLogin(){
     if (r.mustChange) openPin(true, pin); else showApp();
   }).catch(e=>showErr('loginErr',e.message)).finally(()=>{ btn.disabled=false; btn.textContent='登入'; });
 }
-function logout(){ TOKEN=''; store('leave_token',''); showLogin(); }
+function logout(){ TOKEN=''; store('leave_token',''); SEL.clear(); afterSel(); showLogin(); }
+
+/* 手機上 App 一直開著、隔天再切回來時：更新「今天」與最新假單，避免日期停在前一天 */
+let lastSync = Date.now();
+document.addEventListener('visibilitychange', ()=>{
+  if (document.visibilityState!=='visible' || !TOKEN || !INIT) return;
+  if (Date.now() - lastSync < 60*1000) return;   // 一分鐘內不重複更新
+  lastSync = Date.now();
+  call('getInitData').then(d=>{
+    const dayChanged = d.today !== INIT.today;
+    INIT.today = d.today; INIT.holidays = d.holidays;
+    if (dayChanged) [...SEL].forEach(x=>{ if (x < d.today) SEL.delete(x); });
+    afterSel(); refresh();
+  }).catch(()=>{});
+});
 
 /* ---------- 月曆 ---------- */
 
@@ -542,7 +556,7 @@ function submitForm(){
   if (!dates.length && (!p.start || !p.end)) return showErr('fErr','請選擇日期');
   const btn=$('fSubmit'); btn.disabled=true; btn.textContent='送出中…';
   api('submitLeave', p).then(r=>{
-    if(!r.ok) return showErr('fErr','無法送出：\n'+r.conflicts.join('\n'));
+    if(!r.ok){ showErr('fErr','無法送出：\n'+r.conflicts.join('\n')); refresh(); return; }   // 可能剛被別人搶先，重新載入月曆
     closeMask('formMask'); SEL.clear(); afterSel(); toast(`已登記 ${r.dates.length} 天`); refresh();
   }).catch(e=>showErr('fErr',e.message)).finally(()=>{ btn.disabled=false; btn.textContent='送出'; });
 }
