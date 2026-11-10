@@ -33,7 +33,7 @@
             display:inline-flex; align-items:center; justify-content:center; margin-right:6px; flex-shrink:0; }
   .me b { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-right:4px; }
 
-  main { padding:12px 12px 24px; max-width:760px; margin:0 auto; }
+  main { padding:12px 12px calc(96px + env(safe-area-inset-bottom)); max-width:760px; margin:0 auto; }
   .card { background:var(--card); border-radius:14px; padding:12px; margin-bottom:12px; box-shadow:0 1px 2px rgba(0,0,0,.05); }
   .muted { color:var(--muted); font-size:13px; }
 
@@ -85,13 +85,22 @@
   .tag { font-size:11px; padding:1px 6px; border-radius:999px; background:#eef2ff; color:var(--accent); font-weight:500; }
   .tag.alt { background:#ecfdf5; color:#047857; }
 
-  .addBtn { width:100%; padding:13px; font-size:16px; font-weight:700; border-radius:14px; margin-bottom:12px;
-            box-shadow:0 4px 12px rgba(37,99,235,.25); }
+  .fab { position:fixed; right:16px; bottom:calc(20px + env(safe-area-inset-bottom)); z-index:6;
+         border-radius:28px; padding:14px 22px; font-size:16px; font-weight:700;
+         box-shadow:0 6px 16px rgba(37,99,235,.35); }
+
+  /* 月曆左右滑動切換 */
+  #cal { touch-action:pan-y; }
+  #cal.slide-l { animation:slideL .22s ease-out; }
+  #cal.slide-r { animation:slideR .22s ease-out; }
+  @keyframes slideL { from { opacity:0; transform:translateX(24px); } to { opacity:1; transform:none; } }
+  @keyframes slideR { from { opacity:0; transform:translateX(-24px); } to { opacity:1; transform:none; } }
 
   /* 彈出視窗 */
-  .mask { position:fixed; inset:0; background:rgba(0,0,0,.4); display:none; align-items:flex-start; justify-content:center; z-index:10; padding:16px 12px; overflow:auto; }
+  .mask { position:fixed; inset:0; background:rgba(0,0,0,.4); display:none; align-items:flex-end; justify-content:center; z-index:10; }
   .mask.show { display:flex; }
-  .sheet { background:#fff; width:100%; max-width:520px; border-radius:18px; padding:18px 16px; box-shadow:0 10px 30px rgba(0,0,0,.2); }
+  .sheet { background:#fff; width:100%; max-width:520px; border-radius:18px 18px 0 0; padding:18px 16px calc(18px + env(safe-area-inset-bottom));
+           max-height:92vh; overflow:auto; box-shadow:0 -6px 24px rgba(0,0,0,.15); }
   label { display:block; font-size:13px; color:var(--muted); margin:12px 0 4px; }
   .two { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
   .err { background:#fee2e2; color:var(--bad); border-radius:8px; padding:8px 10px; margin-top:10px; font-size:13px; display:none; white-space:pre-line; }
@@ -139,7 +148,6 @@
   </header>
 
   <main>
-    <button class="primary addBtn" onclick="openForm()">＋ 請假</button>
     <div class="card">
       <div class="nav">
         <span class="title" id="monthTitle"></span>
@@ -156,6 +164,8 @@
       <div id="upcoming" class="loading">載入中…</div>
     </div>
   </main>
+
+  <button class="primary fab" onclick="openForm()">＋ 請假</button>
 </div>
 
 <!-- 請假表單 -->
@@ -271,7 +281,7 @@ call('getInitData').then(d=>{
     d.staff.map(s=>`<span><span class="dot" style="background:${s.color}"></span>${esc(s.name)}</span>`).join('') +
     '<span class="sep"></span>' +
     d.types.map((t,i)=>`<span><span class="sw" style="${i?'':'background:var(--muted)'}"></span>${esc(t)}</span>`).join('') +
-    `<span>・每天各限 ${d.limits.map(x=>x.limit).join('/')} 人</span>`;
+    `<span>・上午、下午各限 ${d.limits.map(x=>x.limit).join('/')} 人</span>`;
   const t = parts(d.today); cur = { y:t[0], m:t[1] };
 
   TOKEN = load('leave_token'); NAME = load('leave_name');
@@ -311,7 +321,25 @@ function logout(){ TOKEN=''; store('leave_token',''); showLogin(); }
 /* ---------- 月曆 ---------- */
 
 function refresh(){ loadMonth(); loadUpcoming(); }
-function shiftMonth(n){ cur.m+=n; if(cur.m<1){cur.m=12;cur.y--;} if(cur.m>12){cur.m=1;cur.y++;} loadMonth(); }
+function shiftMonth(n){
+  cur.m+=n; if(cur.m<1){cur.m=12;cur.y--;} if(cur.m>12){cur.m=1;cur.y++;}
+  const cal=$('cal'); cal.classList.remove('slide-l','slide-r'); void cal.offsetWidth;
+  cal.classList.add(n>0?'slide-l':'slide-r');
+  loadMonth();
+}
+
+/* 月曆左右滑：往左滑 = 下個月，往右滑 = 上個月 */
+(function(){
+  let x0=null, y0=null;
+  const cal=$('cal');
+  cal.addEventListener('touchstart', e=>{ const t=e.touches[0]; x0=t.clientX; y0=t.clientY; }, { passive:true });
+  cal.addEventListener('touchend', e=>{
+    if (x0===null) return;
+    const t=e.changedTouches[0], dx=t.clientX-x0, dy=t.clientY-y0;
+    x0=y0=null;
+    if (Math.abs(dx)>50 && Math.abs(dx)>Math.abs(dy)*1.5) shiftMonth(dx<0?1:-1);
+  }, { passive:true });
+})();
 function goToday(){ const t=parts(INIT.today); cur={ y:t[0], m:t[1] }; loadMonth(); }
 
 function loadMonth(){
@@ -346,9 +374,13 @@ function renderCal(){
   $('cal').innerHTML = html;
 }
 
-function freeTypes(list){
-  return INIT.limits.filter(x => list.filter(l=>l.type===x.type).length < x.limit).map(x=>x.type);
+/* 名額以時段計算：全天 = 上午＋下午 */
+function slotsOf(slot){ return slot==='上午' ? ['上午'] : slot==='下午' ? ['下午'] : ['上午','下午']; }
+function freeSlots(list, type){
+  const lim = (INIT.limits.find(x=>x.type===type)||{limit:1}).limit;
+  return ['上午','下午'].filter(s => list.filter(l=>l.type===type && slotsOf(l.slot).indexOf(s)>=0).length < lim);
 }
+function freeTypes(list){ return INIT.types.filter(t => freeSlots(list,t).length); }
 
 function tapDay(ds){
   if (ds<INIT.today) return;
@@ -357,8 +389,10 @@ function tapDay(ds){
   if (isOff(ds)) return toast('週末不用請假');
   const list = monthLeaves.filter(l=>l.date===ds);
   const free = freeTypes(list);
-  if (!free.length) return toast(`${shortDate(ds)} 已滿：` + list.map(l=>`${l.name} ${l.type}`).join('、'));
-  openForm(ds, free[0]);
+  if (!free.length) return toast(`${shortDate(ds)} 已滿：` + list.map(l=>`${l.name}${l.slot!=='全天'?'（'+l.slot+'）':''} ${l.type}`).join('、'));
+  const s = freeSlots(list, free[0]);
+  openForm(ds, free[0], s.length===2 ? '全天' : s[0]);
+  if (s.length===1) toast(`${shortDate(ds)} 只剩${s[0]}可請`);
 }
 
 /* ---------- 近期清單：連續上班日合併成一段 ---------- */
@@ -413,9 +447,10 @@ function cancelGroup(i){
 
 /* ---------- 請假 ---------- */
 
-function openForm(ds, type){
+function openForm(ds, type, slot){
   const d = ds || INIT.today;
   if (type) $('fType').value = type;
+  $('fSlot').value = slot || '全天';
   $('formName').textContent = NAME;
   $('fStart').value=d; $('fEnd').value=d; $('fStart').min=INIT.today; $('fEnd').min=INIT.today;
   $('fReason').value=''; showErr('fErr','');
