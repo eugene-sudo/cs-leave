@@ -58,38 +58,48 @@
   .num { display:inline-flex; width:24px; height:24px; align-items:center; justify-content:center; border-radius:50%;
          font-weight:600; font-size:13px; }
   .day.today .num { background:var(--accent); color:#fff; }
-  /* 已選日期：深色框＋右上角打勾（不用藍色，避免跟「今天」和人員顏色混淆） */
   .day { position:relative; }
-  .day.sel { background:#fff; box-shadow:inset 0 0 0 2px #111827; }
-  .day.sel::after { content:'✓'; position:absolute; top:3px; right:3px; width:15px; height:15px; border-radius:50%;
-                    background:#111827; color:#fff; font-size:10px; line-height:15px; text-align:center; font-weight:700; }
-
-  /* 已選日期列 */
-  .selbar { position:fixed; left:12px; right:12px; bottom:calc(14px + env(safe-area-inset-bottom)); z-index:6;
-            display:none; align-items:center; gap:8px; background:#fff; border-radius:16px; padding:10px 10px 10px 14px;
-            box-shadow:0 8px 24px rgba(0,0,0,.18); max-width:736px; margin:0 auto; }
-  .selbar.show { display:flex; }
-  .selbar .selinfo { flex:1; min-width:0; }
-  .selbar .selinfo b { display:block; font-size:15px; }
-  .selbar .selinfo span { display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  .selbar button { padding:10px 14px; font-weight:600; flex-shrink:0; }
   .hint { font-size:12px; color:var(--muted); text-align:center; margin-top:8px; }
-
-  /* 表單裡的已選日期 */
-  .selchips { display:flex; flex-wrap:wrap; gap:6px; margin-top:4px; }
-  .selchips span { background:#f3f4f6; color:#111827; border:1px solid #d1d5db; border-radius:999px; padding:4px 10px; font-size:13px; font-weight:600; }
-  .selbar { border:1.5px solid #111827; }
-  .selbar .selinfo b::before { content:'✓'; display:inline-flex; width:18px; height:18px; border-radius:50%; background:#111827; color:#fff;
-                               font-size:11px; align-items:center; justify-content:center; margin-right:6px; vertical-align:1px; }
   .hname { display:block; color:var(--bad); font-size:10px; line-height:1.3; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .hname.work { color:var(--accent); }
-  /* 每天分成上、下兩格：上格 = 上午、下格 = 下午；有人請就塗上那個人的顏色 */
-  .slots { display:grid; grid-template-rows:17px 17px; gap:2px; margin-top:3px; }
-  .slot.empty { border-radius:5px; background:repeating-linear-gradient(135deg, transparent 0 4px, rgba(0,0,0,.035) 4px 8px);
-                box-shadow:inset 0 0 0 1px rgba(0,0,0,.05); }
+
+  /* 月曆格子：平常一整格；有人請半天才分成上（上午）下（下午）兩格 */
+  .slots { display:flex; flex-direction:column; gap:2px; margin-top:3px; height:36px; }
+  .slots .row { display:flex; gap:2px; flex:1; min-height:0; }
+  .stripe { flex:1; border-radius:5px; background:repeating-linear-gradient(135deg, transparent 0 4px, rgba(0,0,0,.035) 4px 8px);
+            box-shadow:inset 0 0 0 1px rgba(0,0,0,.05); }
   .seg { flex:1; min-width:0; border-radius:5px; display:flex; align-items:center; justify-content:center;
          font-size:11px; font-weight:800; color:#fff; border:1.5px solid transparent; line-height:1; overflow:hidden; }
   .seg.alt { background:#fff !important; }   /* 代理OP：空心框 */
+
+  /* 當天詳情 */
+  .dt-row { display:flex; align-items:center; gap:10px; padding:10px 0; border-bottom:1px solid var(--line); }
+  .dt-row:last-child { border-bottom:0; }
+  .ini-lg { width:34px; height:34px; border-radius:50%; color:#fff; font-weight:800; font-size:15px; flex-shrink:0;
+            display:flex; align-items:center; justify-content:center; border:2px solid transparent; }
+  .ini-lg.alt { background:#fff !important; }
+  .dt-empty { color:var(--muted); padding:14px 0; text-align:center; }
+  .hol-banner { background:#fef2f2; color:var(--bad); border-radius:10px; padding:8px 12px; margin-top:10px; font-weight:600; }
+
+  /* 請假用的臨時月曆（可複選） */
+  .pk-nav { display:flex; align-items:center; gap:6px; margin:10px 0 6px; }
+  .pk-nav .title { flex:1; font-weight:700; font-size:16px; }
+  .pk-nav button { width:34px; height:32px; padding:0; font-size:17px; }
+  .pk-grid { display:grid; grid-template-columns:repeat(7, minmax(0,1fr)); gap:4px; touch-action:pan-y; }
+  .pk-grid .wd { padding:0 0 2px; }
+  .pk { height:44px; border-radius:10px; background:#f3f4f6; display:flex; flex-direction:column; align-items:center; justify-content:center;
+        font-weight:600; font-size:14px; cursor:pointer; position:relative; line-height:1.1; }
+  .pk small { font-size:9.5px; font-weight:700; color:var(--accent); margin-top:2px; }
+  .pk.blank { background:transparent; cursor:default; }
+  .pk.off { background:transparent; color:#c4c8cf; cursor:default; }
+  .pk.hol { background:transparent; color:#f1a7a7; cursor:default; }
+  .pk.full { background:transparent; color:#c4c8cf; cursor:default; text-decoration:line-through; }
+  .pk.today { box-shadow:inset 0 0 0 1.5px var(--accent); }
+  .pk.sel { background:#111827; color:#fff; }
+  .pk.sel small { color:#fff; }
+  .pk.sel::after { content:'✓'; position:absolute; top:2px; right:4px; font-size:10px; font-weight:800; }
+  .pk-sum { margin-top:8px; font-size:13px; min-height:18px; }
+  .pk-sum b { color:#111827; }
   .legend .ini { display:inline-flex; align-items:center; justify-content:center; width:18px; height:18px; border-radius:50%;
                  color:#fff; font-size:10.5px; font-weight:800; margin-right:4px; vertical-align:-4px; }
 
@@ -185,7 +195,7 @@
         <button class="arrow" onclick="shiftMonth(1)">›</button>
       </div>
       <div class="grid" id="cal"></div>
-      <div class="hint">點日期可以複選，選好按下方「請假」一次送出</div>
+      <div class="hint">點日期可以看當天誰請假</div>
       <div class="legend" id="legend"></div>
     </div>
 
@@ -197,31 +207,34 @@
 
   <button class="primary fab" id="fab" onclick="openForm()">＋ 請假</button>
 
-  <div class="selbar" id="selBar">
-    <div class="selinfo"><b id="selCount"></b><span class="muted" id="selDates"></span></div>
-    <button onclick="clearSel()">清除</button>
-    <button class="primary" onclick="openForm()">請假</button>
+</div>
+
+<!-- 當天詳情 -->
+<div class="mask" id="dayMask" onclick="if(event.target===this)closeMask('dayMask')">
+  <div class="sheet">
+    <b style="font-size:17px" id="dTitle"></b>
+    <div id="dBody"></div>
+    <div class="actions" id="dActions"></div>
   </div>
 </div>
 
-<!-- 請假表單 -->
+<!-- 請假：臨時月曆可複選 -->
 <div class="mask" id="formMask" onclick="if(event.target===this)closeMask('formMask')">
   <div class="sheet">
     <b style="font-size:17px">申請請假</b>
-    <div class="muted" style="margin-top:4px">請假人：<b id="formName"></b></div>
-    <label>假別</label><select id="fType"></select>
-    <div id="selBox" style="display:none">
-      <label>請假日期</label>
-      <div class="selchips" id="selChips"></div>
+    <div class="muted" style="margin-top:4px">請假人：<b id="formName"></b>　點日期可以複選</div>
+    <div class="pk-nav">
+      <span class="title" id="pkTitle"></span>
+      <button onclick="pkShift(-1)">‹</button>
+      <button onclick="pkShift(1)">›</button>
     </div>
-    <div class="two" id="rangeBox">
-      <div><label>開始日</label><input type="date" id="fStart"></div>
-      <div><label>結束日</label><input type="date" id="fEnd"></div>
+    <div class="pk-grid" id="pkGrid"></div>
+    <div class="pk-sum muted" id="pkSum"></div>
+    <div class="two">
+      <div><label>假別</label><select id="fType"></select></div>
+      <div><label>時段</label><select id="fSlot"><option>全天</option><option>上午</option><option>下午</option></select></div>
     </div>
-    <label>時段</label>
-    <select id="fSlot"><option>全天</option><option>上午</option><option>下午</option></select>
     <label>事由（選填）</label><textarea id="fReason" rows="2" maxlength="200"></textarea>
-    <div class="muted" id="skipTxt" style="margin-top:6px"></div>
     <div class="err" id="fErr"></div>
     <div class="actions">
       <button onclick="closeMask('formMask')">取消</button>
@@ -323,12 +336,11 @@ call('getInitData').then(d=>{
   });
   $('loginName').innerHTML = '<option value="">（選擇）</option>' + d.staff.map(s=>`<option>${esc(s.name)}</option>`).join('');
   $('fType').innerHTML = d.types.map(t=>`<option>${esc(t)}</option>`).join('');
-  $('skipTxt').textContent = d.skipWeekends ? '區間請假會自動略過週六日與國定假日' : '區間請假會自動略過國定假日';
   $('legend').innerHTML =
     d.staff.map(s=>`<span><span class="ini" style="background:${s.color}">${esc(initialOf[s.name])}</span>${esc(s.name)}</span>`).join('') +
     '<span class="sep"></span>' +
     d.types.map((t,i)=>`<span><span class="sw" style="${i?'':'background:var(--muted)'}"></span>${esc(t)}</span>`).join('') +
-    `<span>・有人請半天時分上下格（上＝上午、下＝下午），各限 ${d.limits.map(x=>x.limit).join('/')} 人</span>`;
+    `<span>・每個時段限 ${d.slotLimit} 人（休假、代理OP 合併計算）</span>`;
   const t = parts(d.today); cur = { y:t[0], m:t[1] };
 
   TOKEN = load('leave_token'); NAME = load('leave_name');
@@ -363,7 +375,7 @@ function doLogin(){
     if (r.mustChange) openPin(true, pin); else showApp();
   }).catch(e=>showErr('loginErr',e.message)).finally(()=>{ btn.disabled=false; btn.textContent='登入'; });
 }
-function logout(){ TOKEN=''; store('leave_token',''); SEL.clear(); afterSel(); showLogin(); }
+function logout(){ TOKEN=''; store('leave_token',''); closeMask('formMask'); closeMask('dayMask'); showLogin(); }
 
 /* 手機上 App 一直開著、隔天再切回來時：更新「今天」與最新假單，避免日期停在前一天 */
 let lastSync = Date.now();
@@ -374,8 +386,8 @@ document.addEventListener('visibilitychange', ()=>{
   call('getInitData').then(d=>{
     const dayChanged = d.today !== INIT.today;
     INIT.today = d.today; INIT.holidays = d.holidays;
-    if (dayChanged) [...SEL].forEach(x=>{ if (x < d.today) SEL.delete(x); });
-    afterSel(); refresh();
+    if (dayChanged) [...PK.sel].forEach(x=>{ if (x < d.today) PK.sel.delete(x); });
+    refresh();
   }).catch(()=>{});
 });
 
@@ -389,30 +401,54 @@ function shiftMonth(n){
   loadMonth();
 }
 
-/* 月曆左右滑：往左滑 = 下個月，往右滑 = 上個月 */
-(function(){
+/* 左右滑切換月份：往左滑 = 下個月，往右滑 = 上個月（主月曆、請假月曆共用） */
+function onSwipe(el, fn){
   let x0=null, y0=null;
-  const cal=$('cal');
-  cal.addEventListener('touchstart', e=>{ const t=e.touches[0]; x0=t.clientX; y0=t.clientY; }, { passive:true });
-  cal.addEventListener('touchend', e=>{
+  el.addEventListener('touchstart', e=>{ const t=e.touches[0]; x0=t.clientX; y0=t.clientY; }, { passive:true });
+  el.addEventListener('touchend', e=>{
     if (x0===null) return;
     const t=e.changedTouches[0], dx=t.clientX-x0, dy=t.clientY-y0;
     x0=y0=null;
-    if (Math.abs(dx)>50 && Math.abs(dx)>Math.abs(dy)*1.5) shiftMonth(dx<0?1:-1);
+    if (Math.abs(dx)>50 && Math.abs(dx)>Math.abs(dy)*1.5) fn(dx<0?1:-1);
   }, { passive:true });
-})();
+}
+onSwipe($('cal'), shiftMonth);
 function goToday(){ const t=parts(INIT.today); cur={ y:t[0], m:t[1] }; loadMonth(); }
 
 function loadMonth(){
   $('monthTitle').textContent = `${cur.y} 年 ${cur.m} 月`;
-  api('getLeaves', ymd(cur.y,cur.m,1), ymd(cur.y,cur.m,daysIn(cur.y,cur.m)))
-    .then(r=>{ monthLeaves=r; renderCal(); }).catch(e=>toast(e.message));
+  const y=cur.y, m=cur.m;
+  fetchMonth(y,m,true).then(r=>{ if (y===cur.y && m===cur.m) { monthLeaves=r; renderCal(); } }).catch(e=>toast(e.message));
 }
+
+/* 各月份假單快取（主月曆、請假月曆、當天詳情共用） */
+const monthCache = {};
+function mkey(y,m){ return y+'-'+pad(m); }
+function fetchMonth(y,m,force){
+  const k = mkey(y,m);
+  if (!force && monthCache[k]) return Promise.resolve(monthCache[k]);
+  return api('getLeaves', ymd(y,m,1), ymd(y,m,daysIn(y,m))).then(r=>{ monthCache[k]=r; return r; });
+}
+/** 某天所有人的假 */
+function leavesOn(ds){
+  const [y,m] = parts(ds), seen = {}, out = [];
+  (monthCache[mkey(y,m)]||[]).concat(upcoming).forEach(l=>{ if (l.date===ds && !seen[l.id]) { seen[l.id]=1; out.push(l); } });
+  return out;
+}
+
+/* 名額以時段計算：全天 = 上午＋下午；休假、代理OP 共用名額 */
+function slotsOf(slot){ return slot==='上午' ? ['上午'] : slot==='下午' ? ['下午'] : ['上午','下午']; }
+function covers(list, s){ return list.filter(l=>slotsOf(l.slot).indexOf(s)>=0); }
+/** 我這天還能請的時段：有名額、而且我自己還沒登記 */
+function availSlots(list){
+  return ['上午','下午'].filter(s => covers(list,s).length < INIT.slotLimit && !covers(list,s).some(l=>l.name===NAME));
+}
+
+/* ---------- 主月曆（只看，不選） ---------- */
 
 function renderCal(){
   const byDate = {};
   monthLeaves.forEach(l=>(byDate[l.date]=byDate[l.date]||[]).push(l));
-  // 週日開始：日 一 二 三 四 五 六
   let html = WD.split('').map((w,i)=>`<div class="wd ${i===0||i===6?'we':''}">${w}</div>`).join('');
   const lead = new Date(cur.y,cur.m-1,1).getDay();
   for (let i=0;i<lead;i++) html += '<div class="day empty"></div>';
@@ -423,131 +459,76 @@ function renderCal(){
     else if ((wd===0||wd===6) && !(h && h.type==='補班')) cls.push('weekend');
     if (ds<INIT.today) cls.push('past');
     if (ds===INIT.today) cls.push('today');
-    if (list.length && !freeTypes(list).length) cls.push('full');
-    if (SEL.has(ds)) cls.push('sel');
+    if (covers(list,'上午').length>=INIT.slotLimit && covers(list,'下午').length>=INIT.slotLimit) cls.push('full');
     const hTag = h ? `<span class="hname ${h.type==='補班'?'work':''}">${esc(h.type==='補班'?'補班':h.name)}</span>` : '';
-    const workday = !isOff(ds);
-    const slotsHtml = (workday || list.length) ? renderSlots(list) : '';
-    html += `<div class="${cls.join(' ')}" onclick="tapDay('${ds}')"><div class="num">${d}</div>${hTag}${slotsHtml}</div>`;
+    const slotsHtml = (!isOff(ds) || list.length) ? renderSlots(list) : '';
+    html += `<div class="${cls.join(' ')}" onclick="openDay('${ds}')"><div class="num">${d}</div>${hTag}${slotsHtml}</div>`;
   }
   $('cal').innerHTML = html;
 }
 
-/* 月曆格子：上列 = 上午、下列 = 下午。
- * 同一個人上午＋下午都請（全天）→ 合併成一個跨兩列的色塊；
- * 休假實心、代理OP 空心；某個時段完全沒人 → 斜線空格。 */
+/** 平常一整格；有人只請半天時才分上（上午）下（下午）兩格 */
 function renderSlots(list){
-  // 每一「欄」放同一種假別的一組上午／下午
-  const lanes = [];
-  INIT.types.forEach(t=>{
-    const am = list.filter(l=>l.type===t && slotsOf(l.slot).indexOf('上午')>=0);
-    const pm = list.filter(l=>l.type===t && slotsOf(l.slot).indexOf('下午')>=0);
-    const usedPm = new Set();
-    am.forEach(a=>{                                   // 同一人上下午配成一欄
-      const p = pm.find(x=>x.name===a.name && !usedPm.has(x));
-      if (p) usedPm.add(p);
-      lanes.push({ type:t, am:a, pm:p||null });
-    });
-    pm.filter(x=>!usedPm.has(x)).forEach(p=>{          // 只有下午的人：補進同假別、下午空著的欄
-      const lane = lanes.find(L=>L.type===t && !L.pm);
-      if (lane) lane.pm = p; else lanes.push({ type:t, am:null, pm:p });
-    });
-  });
-
-  const seg = (l, col, row, label) => {
+  const seg = l => {
     const c = colorOf[l.name]||'#666', alt = isAlt(l.type);
-    const style = (alt ? `border-color:${c};color:${c};` : `background:${c};`) + `grid-column:${col};grid-row:${row}`;
-    return `<span class="seg ${alt?'alt':''}" style="${style}" title="${esc(l.name)} ${label} ${esc(l.type)}">${esc(initialOf[l.name]||l.name.charAt(0))}</span>`;
+    const style = alt ? `border-color:${c};color:${c}` : `background:${c}`;
+    return `<span class="seg ${alt?'alt':''}" style="${style}">${esc(initialOf[l.name]||l.name.charAt(0))}</span>`;
   };
+  const am = covers(list,'上午'), pm = covers(list,'下午');
+  if (!am.length && !pm.length) return '<div class="slots"><div class="stripe"></div></div>';
+  const sameNames = (a,b) => a.length===b.length && a.every(x=>b.some(y=>y.name===x.name && y.type===x.type));
+  if (sameNames(am,pm)) return '<div class="slots"><div class="row">' + am.map(seg).join('') + '</div></div>';
+  const row = arr => '<div class="row">' + (arr.length ? arr.map(seg).join('') : '<div class="stripe"></div>') + '</div>';
+  return '<div class="slots">' + row(am) + row(pm) + '</div>';
+}
 
-  let html = `<div class="slots" style="grid-template-columns:repeat(${Math.max(lanes.length,1)},minmax(0,1fr))">`;
+/* ---------- 點日期：當天詳情 ---------- */
 
-  // 沒有任何半天假 → 整天一格（沒人請就是一整格斜線）
-  const isWhole = L => L.am && L.pm && L.am.name===L.pm.name;
-  if (lanes.every(isWhole)) {
-    if (!lanes.length) return html + `<div class="slot empty" style="grid-column:1 / -1;grid-row:1 / 3"></div></div>`;
-    lanes.forEach((L,i)=>{ html += seg(L.am, i+1, '1 / 3', '全天'); });
-    return html + '</div>';
-  }
+let DAY = '';
+function openDay(ds){
+  DAY = ds;
+  const h = holiday(ds), list = leavesOn(ds);
+  $('dTitle').textContent = shortDate(ds);
 
-  // 有人請半天 → 才分成上、下兩格
-  lanes.forEach((L,i)=>{
-    const col = i+1;
-    if (L.am && L.pm && L.am.name===L.pm.name) html += seg(L.am, col, '1 / 3', '全天');
-    else {
-      if (L.am) html += seg(L.am, col, '1', '上午');
-      if (L.pm) html += seg(L.pm, col, '2', '下午');
-    }
+  // 同一人同假別的上午＋下午合併成全天
+  const rows = [], used = new Set();
+  list.forEach(l=>{
+    if (used.has(l)) return;
+    const pair = l.slot!=='全天' ? list.find(x=>x!==l && !used.has(x) && x.name===l.name && x.type===l.type && x.slot!=='全天' && x.slot!==l.slot) : null;
+    used.add(l); if (pair) used.add(pair);
+    rows.push({ name:l.name, type:l.type, slot: pair ? '全天' : l.slot, reason: l.reason || (pair && pair.reason) || '', ids: pair ? [l.id, pair.id] : [l.id] });
   });
-  if (!lanes.some(L=>L.am)) html += `<div class="slot empty" style="grid-column:1 / -1;grid-row:1" title="上午"></div>`;
-  if (!lanes.some(L=>L.pm)) html += `<div class="slot empty" style="grid-column:1 / -1;grid-row:2" title="下午"></div>`;
-  return html + '</div>';
+  const order = { '全天':0, '上午':1, '下午':2 };
+  rows.sort((a,b)=>order[a.slot]-order[b.slot]);
+
+  let body = h ? `<div class="hol-banner">${esc(h.type==='補班' ? '補班日' : h.name)}</div>` : '';
+  if (!rows.length) body += `<div class="dt-empty">${isOff(ds) ? '' : '這天沒有人請假'}</div>`;
+  body += rows.map((r,i)=>{
+    const c = colorOf[r.name]||'#666', alt = isAlt(r.type);
+    const canCancel = r.name===NAME && ds>=INIT.today;
+    return `<div class="dt-row">
+      <span class="ini-lg ${alt?'alt':''}" style="${alt?`border-color:${c};color:${c}`:`background:${c}`}">${esc(initialOf[r.name]||r.name.charAt(0))}</span>
+      <div class="info">
+        <div class="who" style="display:flex;gap:6px;align-items:center;font-weight:600">${esc(r.name)}<span class="tag ${alt?'alt':''}">${esc(r.type)}</span></div>
+        <div class="muted">${esc(r.slot)}${r.reason?'・'+esc(r.reason):''}</div>
+      </div>
+      ${canCancel?`<button class="danger" onclick="cancelDayRow(${i})">取消</button>`:''}
+    </div>`;
+  }).join('');
+  $('dBody').innerHTML = body;
+  openDay._rows = rows;
+
+  const free = (ds>=INIT.today && !isOff(ds)) ? availSlots(list) : [];
+  $('dActions').innerHTML = `<button onclick="closeMask('dayMask')">關閉</button>` +
+    (free.length ? `<button class="primary" onclick="closeMask('dayMask');openForm('${ds}')">請這天${free.length===1?'（'+free[0]+'）':''}</button>` : '');
+  openMask('dayMask');
 }
-
-/* 名額以時段計算：全天 = 上午＋下午 */
-function slotsOf(slot){ return slot==='上午' ? ['上午'] : slot==='下午' ? ['下午'] : ['上午','下午']; }
-function freeSlots(list, type){
-  const lim = (INIT.limits.find(x=>x.type===type)||{limit:1}).limit;
-  return ['上午','下午'].filter(s => list.filter(l=>l.type===type && slotsOf(l.slot).indexOf(s)>=0).length < lim);
+function cancelDayRow(i){
+  const r = openDay._rows[i];
+  if (!confirm(`確定取消 ${shortDate(DAY)} ${r.slot}的${r.type}？`)) return;
+  api('cancelLeave', r.ids).then(()=>{ toast('已取消'); closeMask('dayMask'); invalidate(); refresh(); }).catch(e=>toast(e.message));
 }
-function freeTypes(list){ return INIT.types.filter(t => freeSlots(list,t).length); }
-
-/* ---------- 月曆複選日期 ---------- */
-
-const SEL = new Set();   // 已選的日期（可以跨月份）
-
-/** 某天所有人的假：合併本月與近期資料 */
-function leavesOn(ds){
-  const seen = {}, out = [];
-  monthLeaves.concat(upcoming).forEach(l=>{ if (l.date===ds && !seen[l.id]) { seen[l.id]=1; out.push(l); } });
-  return out;
-}
-
-function tapDay(ds){
-  if (ds<INIT.today) return;
-  if (SEL.has(ds)) { SEL.delete(ds); return afterSel(); }
-  const h = holiday(ds);
-  if (h && h.type==='放假') return toast(`${shortDate(ds)} ${h.name}`);
-  if (isOff(ds)) return;
-  const list = leavesOn(ds);
-  if (mySlots(list).size === 2) return toast(`${shortDate(ds)} 你已經登記整天了`);
-  const free = INIT.types.filter(t => availSlots(list,t).length);
-  if (!free.length) return toast(`${shortDate(ds)} 已滿：` + list.map(l=>`${l.name}${l.slot!=='全天'?'（'+l.slot+'）':''} ${l.type}`).join('、'));
-  const s = availSlots(list, free[0]);
-  if (s.length===1) toast(`${shortDate(ds)} 只剩${s[0]}可請`);
-  SEL.add(ds);
-  afterSel();
-}
-
-function clearSel(){ SEL.clear(); afterSel(); }
-
-function afterSel(){
-  renderCal();
-  const dates = [...SEL].sort();
-  $('selBar').classList.toggle('show', dates.length>0);
-  $('fab').style.display = dates.length ? 'none' : '';
-  $('selCount').textContent = `已選 ${dates.length} 天`;
-  $('selDates').textContent = dates.map(shortDate).join('、');
-}
-
-/** 所有已選日期都還有名額的假別與時段，當作表單預設值 */
-/** 自己這天已經登記的時段 */
-function mySlots(list){
-  const s = new Set();
-  list.filter(l=>l.name===NAME).forEach(l=>slotsOf(l.slot).forEach(x=>s.add(x)));
-  return s;
-}
-/** 自己還能請的時段：有名額、而且自己還沒登記 */
-function availSlots(list, type){ const m = mySlots(list); return freeSlots(list, type).filter(s=>!m.has(s)); }
-
-function commonFree(dates){
-  for (const t of INIT.types){
-    let slots = ['上午','下午'];
-    for (const d of dates) { const f = availSlots(leavesOn(d), t); slots = slots.filter(s=>f.indexOf(s)>=0); }
-    if (slots.length) return { type:t, slot: slots.length===2 ? '全天' : slots[0] };
-  }
-  return { type:INIT.types[0], slot:'全天' };
-}
+function invalidate(){ Object.keys(monthCache).forEach(k=>delete monthCache[k]); }
 
 /* ---------- 近期清單：連續上班日合併成一段 ---------- */
 
@@ -556,7 +537,6 @@ function loadUpcoming(){
 }
 
 function groupLeaves(list){
-  // 先把「同一人、同假別、同一天」的上午＋下午合併成全天
   const byDay = {}, merged = [];
   list.forEach(l=>{ const k = l.name+'|'+l.type+'|'+l.date; (byDay[k]=byDay[k]||[]).push(l); });
   Object.keys(byDay).forEach(k=>{
@@ -569,8 +549,6 @@ function groupLeaves(list){
       arr.forEach(l=>merged.push(Object.assign({}, l, { ids:[l.id] })));
     }
   });
-
-  // 再把連續上班日合併成一段
   const sorted = merged.sort((a,b)=> a.name.localeCompare(b.name) || a.type.localeCompare(b.type) || a.date.localeCompare(b.date));
   const groups = [];
   sorted.forEach(l=>{
@@ -586,13 +564,13 @@ function groupLeaves(list){
 
 function renderUpcoming(){
   const box=$('upcoming'); box.className='';
-  if(!upcoming.length){ box.innerHTML='<div class="muted" style="padding:8px 0">接下來 90 天沒有人請假</div>'; return; }
-  box.innerHTML = groupLeaves(upcoming).map((g,i)=>{
+  const groups = groupLeaves(upcoming);
+  renderUpcoming._groups = groups;
+  if(!groups.length){ box.innerHTML='<div class="muted" style="padding:8px 0">接下來 90 天沒有人請假</div>'; return; }
+  box.innerHTML = groups.map((g,i)=>{
     const [, sm, sd] = parts(g.start);
     const c = colorOf[g.name]||'#666';
-    const when = g.start===g.end
-      ? (g.slot!=='全天' ? g.slot : '全天')
-      : `到 ${shortDate(g.end)}・共 ${g.days} 天`;
+    const when = g.start===g.end ? g.slot : `到 ${shortDate(g.end)}・共 ${g.days} 天${g.slot!=='全天'?'（'+g.slot+'）':''}`;
     return `
     <div class="item">
       <div class="datebox"><div class="dm" style="background:${c}">${sm} 月</div><div class="dd">${sd}</div><div class="dw">週${WD[wdIdx(g.start)]}</div></div>
@@ -604,52 +582,103 @@ function renderUpcoming(){
       ${g.name===NAME?`<button class="danger" onclick="cancelGroup(${i})">取消</button>`:''}
     </div>`;
   }).join('');
-  renderUpcoming._groups = groupLeaves(upcoming);
 }
 
 function cancelGroup(i){
   const g = renderUpcoming._groups[i];
   const range = g.start===g.end ? shortDate(g.start) : `${shortDate(g.start)} – ${shortDate(g.end)}（${g.days} 天）`;
   if(!confirm(`確定取消 ${range} 的${g.type}？`)) return;
-  api('cancelLeave', g.ids).then(r=>{ toast(`已取消 ${r.count} 天`); refresh(); }).catch(e=>toast(e.message));
+  api('cancelLeave', g.ids).then(r=>{ toast(`已取消 ${r.count} 天`); invalidate(); refresh(); }).catch(e=>toast(e.message));
 }
 
-/* ---------- 請假 ---------- */
+/* ---------- 請假：臨時月曆可複選（可以跨月份） ---------- */
 
-/** 有選日期 → 表單顯示已選日期；沒選 → 顯示開始／結束日 */
-function openForm(){
-  const dates = [...SEL].sort();
-  const useSel = dates.length > 0;
-  $('selBox').style.display = useSel ? '' : 'none';
-  $('rangeBox').style.display = useSel ? 'none' : '';
-  $('skipTxt').style.display = useSel ? 'none' : '';
-  if (useSel) {
-    $('selChips').innerHTML = dates.map(d=>`<span>${esc(shortDate(d))}</span>`).join('');
-    const f = commonFree(dates);
-    $('fType').value = f.type; $('fSlot').value = f.slot;
-  } else {
-    $('fStart').value = INIT.today; $('fEnd').value = INIT.today;
-    $('fStart').min = INIT.today; $('fEnd').min = INIT.today;
-    $('fType').value = INIT.types[0]; $('fSlot').value = '全天';
-  }
+const PK = { y:0, m:0, sel:new Set() };
+
+function openForm(ds){
+  PK.sel.clear();
+  if (ds) PK.sel.add(ds);
+  const base = ds ? parts(ds) : [cur.y, cur.m];
+  PK.y = base[0]; PK.m = base[1];
   $('formName').textContent = NAME;
+  $('fType').value = INIT.types[0];
+  $('fSlot').value = '全天'; PK.slotTouched = false;
   $('fReason').value=''; showErr('fErr','');
+  pkLoad();
   openMask('formMask');
 }
-/* 選了開始日，結束日自動跟著變成同一天；要請多天再改結束日 */
-$('fStart').addEventListener('change', e=>{ $('fEnd').value = e.target.value; });
+function pkShift(n){
+  PK.m+=n; if(PK.m<1){PK.m=12;PK.y--;} if(PK.m>12){PK.m=1;PK.y++;}
+  pkLoad();
+}
+onSwipe($('pkGrid'), pkShift);
+$('fSlot').addEventListener('change', ()=>{ PK.slotTouched = true; });
+
+function pkLoad(){
+  $('pkTitle').textContent = `${PK.y} 年 ${PK.m} 月`;
+  pkRender();                                  // 先畫（用快取），抓到資料再更新
+  const y=PK.y, m=PK.m;
+  fetchMonth(y,m).then(()=>{ if (y===PK.y && m===PK.m) pkRender(); }).catch(e=>toast(e.message));
+}
+
+function pkRender(){
+  let html = WD.split('').map((w,i)=>`<div class="wd ${i===0||i===6?'we':''}">${w}</div>`).join('');
+  const lead = new Date(PK.y,PK.m-1,1).getDay();
+  for (let i=0;i<lead;i++) html += '<div class="pk blank"></div>';
+  for (let d=1; d<=daysIn(PK.y,PK.m); d++){
+    const ds = ymd(PK.y,PK.m,d), h = holiday(ds), cls = ['pk'];
+    let sub = '';
+    if (ds < INIT.today) cls.push('off');
+    else if (h && h.type==='放假') cls.push('hol');
+    else if (isOff(ds)) cls.push('off');
+    else {
+      const free = availSlots(leavesOn(ds));
+      if (!free.length) cls.push('full');
+      else if (free.length===1) sub = `<small>${free[0]}</small>`;
+    }
+    if (ds===INIT.today) cls.push('today');
+    if (PK.sel.has(ds)) cls.push('sel');
+    html += `<div class="${cls.join(' ')}" onclick="pkTap('${ds}')">${d}${sub}</div>`;
+  }
+  $('pkGrid').innerHTML = html;
+  pkSummary();
+}
+
+function pkTap(ds){
+  if (PK.sel.has(ds)) { PK.sel.delete(ds); return pkRender(); }
+  const h = holiday(ds);
+  if (ds < INIT.today) return;
+  if (h && h.type==='放假') return toast(`${shortDate(ds)} ${h.name}`);
+  if (isOff(ds)) return;
+  const list = leavesOn(ds), free = availSlots(list);
+  if (!free.length) return toast(`${shortDate(ds)} 已滿：` + list.map(l=>`${l.name}（${l.slot}${l.type}）`).join('、'));
+  PK.sel.add(ds);
+  pkRender();
+}
+
+/** 已選日期的摘要，並把時段預設成每一天都能請的時段 */
+function pkSummary(){
+  const dates = [...PK.sel].sort();
+  if (!dates.length) { $('pkSum').innerHTML = '還沒選日期'; return; }
+  let common = ['上午','下午'];
+  dates.forEach(d=>{ const f = availSlots(leavesOn(d)); common = common.filter(s=>f.indexOf(s)>=0); });
+  let note = '';
+  if (common.length===2) { if (!PK.slotTouched) $('fSlot').value = '全天'; }
+  else if (common.length===1) { $('fSlot').value = common[0]; note = `・只剩${common[0]}可請`; }
+  else note = '・選的日期可請時段不同，請分開送出';
+  $('pkSum').innerHTML = `已選 <b>${dates.length}</b> 天：${esc(dates.map(shortDate).join('、'))}${note}`;
+}
 
 function submitForm(){
-  const dates = [...SEL].sort();
-  const p = { type:$('fType').value, slot:$('fSlot').value, reason:$('fReason').value.trim() };
-  if (dates.length) p.dates = dates;
-  else { p.start = $('fStart').value; p.end = $('fEnd').value; }
+  const dates = [...PK.sel].sort();
   showErr('fErr','');
-  if (!dates.length && (!p.start || !p.end)) return showErr('fErr','請選擇日期');
+  if (!dates.length) return showErr('fErr','請先在月曆上點選日期');
+  const p = { type:$('fType').value, slot:$('fSlot').value, reason:$('fReason').value.trim(), dates };
   const btn=$('fSubmit'); btn.disabled=true; btn.textContent='送出中…';
   api('submitLeave', p).then(r=>{
-    if(!r.ok){ showErr('fErr','無法送出：\n'+r.conflicts.join('\n')); refresh(); return; }   // 可能剛被別人搶先，重新載入月曆
-    closeMask('formMask'); SEL.clear(); afterSel(); toast(`已登記 ${r.dates.length} 天`); refresh();
+    invalidate();
+    if(!r.ok){ showErr('fErr','無法送出：\n'+r.conflicts.join('\n')); refresh(); fetchMonth(PK.y,PK.m,true).then(pkRender); return; }
+    closeMask('formMask'); PK.sel.clear(); toast(`已登記 ${r.dates.length} 天`); refresh();
   }).catch(e=>showErr('fErr',e.message)).finally(()=>{ btn.disabled=false; btn.textContent='送出'; });
 }
 
