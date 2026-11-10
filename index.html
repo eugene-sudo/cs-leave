@@ -84,8 +84,7 @@
   .hname { display:block; color:var(--bad); font-size:10px; line-height:1.3; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .hname.work { color:var(--accent); }
   /* 每天分成上、下兩格：上格 = 上午、下格 = 下午；有人請就塗上那個人的顏色 */
-  .slots { display:flex; flex-direction:column; gap:2px; margin-top:3px; }
-  .slot { display:flex; gap:2px; height:17px; }
+  .slots { display:grid; grid-template-rows:17px 17px; gap:2px; margin-top:3px; }
   .slot.empty { border-radius:5px; background:repeating-linear-gradient(135deg, transparent 0 4px, rgba(0,0,0,.035) 4px 8px);
                 box-shadow:inset 0 0 0 1px rgba(0,0,0,.05); }
   .seg { flex:1; min-width:0; border-radius:5px; display:flex; align-items:center; justify-content:center;
@@ -329,7 +328,7 @@ call('getInitData').then(d=>{
     d.staff.map(s=>`<span><span class="ini" style="background:${s.color}">${esc(initialOf[s.name])}</span>${esc(s.name)}</span>`).join('') +
     '<span class="sep"></span>' +
     d.types.map((t,i)=>`<span><span class="sw" style="${i?'':'background:var(--muted)'}"></span>${esc(t)}</span>`).join('') +
-    `<span>・上格＝上午、下格＝下午，各限 ${d.limits.map(x=>x.limit).join('/')} 人</span>`;
+    `<span>・有人請半天時分上下格（上＝上午、下＝下午），各限 ${d.limits.map(x=>x.limit).join('/')} 人</span>`;
   const t = parts(d.today); cur = { y:t[0], m:t[1] };
 
   TOKEN = load('leave_token'); NAME = load('leave_name');
@@ -427,24 +426,62 @@ function renderCal(){
     if (list.length && !freeTypes(list).length) cls.push('full');
     if (SEL.has(ds)) cls.push('sel');
     const hTag = h ? `<span class="hname ${h.type==='補班'?'work':''}">${esc(h.type==='補班'?'補班':h.name)}</span>` : '';
-    // 上、下兩格：每格放這個時段的人（休假實心、代理OP 空心），全天假會同時塗滿兩格
     const workday = !isOff(ds);
-    let slotsHtml = '';
-    if (workday || list.length) {
-      slotsHtml = '<div class="slots">' + ['上午','下午'].map(s=>{
-        const here = list.filter(l=>slotsOf(l.slot).indexOf(s)>=0)
-                         .sort((a,b)=>INIT.types.indexOf(a.type)-INIT.types.indexOf(b.type));
-        if (!here.length) return `<div class="slot empty" title="${s}"></div>`;
-        return '<div class="slot">' + here.map(l=>{
-          const c = colorOf[l.name]||'#666', alt = isAlt(l.type);
-          const style = alt ? `border-color:${c};color:${c}` : `background:${c}`;
-          return `<span class="seg ${alt?'alt':''}" style="${style}" title="${esc(l.name)} ${s} ${esc(l.type)}">${esc(initialOf[l.name]||l.name.charAt(0))}</span>`;
-        }).join('') + '</div>';
-      }).join('') + '</div>';
-    }
+    const slotsHtml = (workday || list.length) ? renderSlots(list) : '';
     html += `<div class="${cls.join(' ')}" onclick="tapDay('${ds}')"><div class="num">${d}</div>${hTag}${slotsHtml}</div>`;
   }
   $('cal').innerHTML = html;
+}
+
+/* 月曆格子：上列 = 上午、下列 = 下午。
+ * 同一個人上午＋下午都請（全天）→ 合併成一個跨兩列的色塊；
+ * 休假實心、代理OP 空心；某個時段完全沒人 → 斜線空格。 */
+function renderSlots(list){
+  // 每一「欄」放同一種假別的一組上午／下午
+  const lanes = [];
+  INIT.types.forEach(t=>{
+    const am = list.filter(l=>l.type===t && slotsOf(l.slot).indexOf('上午')>=0);
+    const pm = list.filter(l=>l.type===t && slotsOf(l.slot).indexOf('下午')>=0);
+    const usedPm = new Set();
+    am.forEach(a=>{                                   // 同一人上下午配成一欄
+      const p = pm.find(x=>x.name===a.name && !usedPm.has(x));
+      if (p) usedPm.add(p);
+      lanes.push({ type:t, am:a, pm:p||null });
+    });
+    pm.filter(x=>!usedPm.has(x)).forEach(p=>{          // 只有下午的人：補進同假別、下午空著的欄
+      const lane = lanes.find(L=>L.type===t && !L.pm);
+      if (lane) lane.pm = p; else lanes.push({ type:t, am:null, pm:p });
+    });
+  });
+
+  const seg = (l, col, row, label) => {
+    const c = colorOf[l.name]||'#666', alt = isAlt(l.type);
+    const style = (alt ? `border-color:${c};color:${c};` : `background:${c};`) + `grid-column:${col};grid-row:${row}`;
+    return `<span class="seg ${alt?'alt':''}" style="${style}" title="${esc(l.name)} ${label} ${esc(l.type)}">${esc(initialOf[l.name]||l.name.charAt(0))}</span>`;
+  };
+
+  let html = `<div class="slots" style="grid-template-columns:repeat(${Math.max(lanes.length,1)},minmax(0,1fr))">`;
+
+  // 沒有任何半天假 → 整天一格（沒人請就是一整格斜線）
+  const isWhole = L => L.am && L.pm && L.am.name===L.pm.name;
+  if (lanes.every(isWhole)) {
+    if (!lanes.length) return html + `<div class="slot empty" style="grid-column:1 / -1;grid-row:1 / 3"></div></div>`;
+    lanes.forEach((L,i)=>{ html += seg(L.am, i+1, '1 / 3', '全天'); });
+    return html + '</div>';
+  }
+
+  // 有人請半天 → 才分成上、下兩格
+  lanes.forEach((L,i)=>{
+    const col = i+1;
+    if (L.am && L.pm && L.am.name===L.pm.name) html += seg(L.am, col, '1 / 3', '全天');
+    else {
+      if (L.am) html += seg(L.am, col, '1', '上午');
+      if (L.pm) html += seg(L.pm, col, '2', '下午');
+    }
+  });
+  if (!lanes.some(L=>L.am)) html += `<div class="slot empty" style="grid-column:1 / -1;grid-row:1" title="上午"></div>`;
+  if (!lanes.some(L=>L.pm)) html += `<div class="slot empty" style="grid-column:1 / -1;grid-row:2" title="下午"></div>`;
+  return html + '</div>';
 }
 
 /* 名額以時段計算：全天 = 上午＋下午 */
