@@ -473,9 +473,10 @@ function tapDay(ds){
   if (h && h.type==='放假') return toast(`${shortDate(ds)} ${h.name}`);
   if (isOff(ds)) return;
   const list = leavesOn(ds);
-  const free = freeTypes(list);
+  if (mySlots(list).size === 2) return toast(`${shortDate(ds)} 你已經登記整天了`);
+  const free = INIT.types.filter(t => availSlots(list,t).length);
   if (!free.length) return toast(`${shortDate(ds)} 已滿：` + list.map(l=>`${l.name}${l.slot!=='全天'?'（'+l.slot+'）':''} ${l.type}`).join('、'));
-  const s = freeSlots(list, free[0]);
+  const s = availSlots(list, free[0]);
   if (s.length===1) toast(`${shortDate(ds)} 只剩${s[0]}可請`);
   SEL.add(ds);
   afterSel();
@@ -493,10 +494,19 @@ function afterSel(){
 }
 
 /** 所有已選日期都還有名額的假別與時段，當作表單預設值 */
+/** 自己這天已經登記的時段 */
+function mySlots(list){
+  const s = new Set();
+  list.filter(l=>l.name===NAME).forEach(l=>slotsOf(l.slot).forEach(x=>s.add(x)));
+  return s;
+}
+/** 自己還能請的時段：有名額、而且自己還沒登記 */
+function availSlots(list, type){ const m = mySlots(list); return freeSlots(list, type).filter(s=>!m.has(s)); }
+
 function commonFree(dates){
   for (const t of INIT.types){
     let slots = ['上午','下午'];
-    for (const d of dates) { const f = freeSlots(leavesOn(d), t); slots = slots.filter(s=>f.indexOf(s)>=0); }
+    for (const d of dates) { const f = availSlots(leavesOn(d), t); slots = slots.filter(s=>f.indexOf(s)>=0); }
     if (slots.length) return { type:t, slot: slots.length===2 ? '全天' : slots[0] };
   }
   return { type:INIT.types[0], slot:'全天' };
@@ -509,14 +519,29 @@ function loadUpcoming(){
 }
 
 function groupLeaves(list){
-  const sorted = list.slice().sort((a,b)=> a.name.localeCompare(b.name) || a.type.localeCompare(b.type) || a.date.localeCompare(b.date));
+  // 先把「同一人、同假別、同一天」的上午＋下午合併成全天
+  const byDay = {}, merged = [];
+  list.forEach(l=>{ const k = l.name+'|'+l.type+'|'+l.date; (byDay[k]=byDay[k]||[]).push(l); });
+  Object.keys(byDay).forEach(k=>{
+    const arr = byDay[k];
+    const am = arr.find(l=>l.slot==='上午'), pm = arr.find(l=>l.slot==='下午');
+    if (am && pm) {
+      merged.push(Object.assign({}, am, { slot:'全天', ids:[am.id, pm.id], reason: am.reason || pm.reason }));
+      arr.filter(l=>l!==am && l!==pm).forEach(l=>merged.push(Object.assign({}, l, { ids:[l.id] })));
+    } else {
+      arr.forEach(l=>merged.push(Object.assign({}, l, { ids:[l.id] })));
+    }
+  });
+
+  // 再把連續上班日合併成一段
+  const sorted = merged.sort((a,b)=> a.name.localeCompare(b.name) || a.type.localeCompare(b.type) || a.date.localeCompare(b.date));
   const groups = [];
   sorted.forEach(l=>{
     const g = groups[groups.length-1];
     if (g && g.name===l.name && g.type===l.type && g.slot===l.slot && g.reason===l.reason && nextWorkday(g.end)===l.date){
-      g.end = l.date; g.ids.push(l.id); g.days++;
+      g.end = l.date; g.ids.push(...l.ids); g.days++;
     } else {
-      groups.push({ name:l.name, type:l.type, slot:l.slot, reason:l.reason, start:l.date, end:l.date, ids:[l.id], days:1 });
+      groups.push({ name:l.name, type:l.type, slot:l.slot, reason:l.reason, start:l.date, end:l.date, ids:l.ids.slice(), days:1 });
     }
   });
   return groups.sort((a,b)=>a.start.localeCompare(b.start));
