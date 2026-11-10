@@ -128,6 +128,13 @@
          border-radius:28px; padding:14px 22px; font-size:16px; font-weight:700;
          box-shadow:0 6px 16px rgba(37,99,235,.35); }
 
+  /* 載入中：月曆變淡、不能再切換月份 */
+  .busy { opacity:.35; pointer-events:none; transition:opacity .15s; }
+  .mini-spin { display:none; width:14px; height:14px; border:2px solid var(--line); border-top-color:var(--accent);
+               border-radius:50%; animation:spin .8s linear infinite; margin-left:8px; vertical-align:-1px; }
+  .mini-spin.on { display:inline-block; }
+  button.nav-locked { opacity:.4; pointer-events:none; }
+
   /* 月曆左右滑動切換 */
   #cal { touch-action:pan-y; }
   #cal.slide-l { animation:slideL .22s ease-out; }
@@ -189,7 +196,7 @@
   <main>
     <div class="card">
       <div class="nav">
-        <span class="title" id="monthTitle"></span>
+        <span class="title"><span id="monthTitle"></span><span class="mini-spin" id="calSpin"></span></span>
         <button onclick="goToday()">今天</button>
         <button class="arrow" onclick="shiftMonth(-1)">‹</button>
         <button class="arrow" onclick="shiftMonth(1)">›</button>
@@ -224,7 +231,7 @@
     <b style="font-size:17px">申請請假</b>
     <div class="muted" style="margin-top:4px">請假人：<b id="formName"></b>　點日期可以複選</div>
     <div class="pk-nav">
-      <span class="title" id="pkTitle"></span>
+      <span class="title"><span id="pkTitle"></span><span class="mini-spin" id="pkSpin"></span></span>
       <button onclick="pkShift(-1)">‹</button>
       <button onclick="pkShift(1)">›</button>
     </div>
@@ -327,6 +334,7 @@ function api(fn,...args){
 
 call('getInitData').then(d=>{
   INIT = d;
+  if (!(INIT.slotLimit > 0)) INIT.slotLimit = 1;   // 後端還沒更新時的預設值：每個時段 1 人
   d.staff.forEach(s=>colorOf[s.name]=s.color);
   // 名字縮寫：預設第一個字母；如果有人撞同一個字母，就改用前兩個字
   d.staff.forEach(s=>{
@@ -394,7 +402,23 @@ document.addEventListener('visibilitychange', ()=>{
 /* ---------- 月曆 ---------- */
 
 function refresh(){ loadMonth(); loadUpcoming(); }
+/* 載入中鎖定：資料還沒回來前，不能再滑動或按箭頭切換月份 */
+const BUSY = { main:false, pk:false };
+function setBusy(which, on){
+  BUSY[which] = on;
+  const grid = which==='main' ? $('cal') : $('pkGrid');
+  grid.classList.toggle('busy', on);
+  $(which==='main' ? 'calSpin' : 'pkSpin').classList.toggle('on', on);
+  const box = grid.closest(which==='main' ? '.card' : '.sheet');
+  box.querySelectorAll(which==='main' ? '.nav button' : '.pk-nav button').forEach(b=>b.classList.toggle('nav-locked', on));
+}
+/** 先在背景抓前後一個月，之後滑過去就不用等 */
+function prefetchAround(y,m){
+  [-1,1].forEach(n=>{ let yy=y, mm=m+n; if(mm<1){mm=12;yy--;} if(mm>12){mm=1;yy++;} fetchMonth(yy,mm).catch(()=>{}); });
+}
+
 function shiftMonth(n){
+  if (BUSY.main) return;
   cur.m+=n; if(cur.m<1){cur.m=12;cur.y--;} if(cur.m>12){cur.m=1;cur.y++;}
   const cal=$('cal'); cal.classList.remove('slide-l','slide-r'); void cal.offsetWidth;
   cal.classList.add(n>0?'slide-l':'slide-r');
@@ -413,21 +437,38 @@ function onSwipe(el, fn){
   }, { passive:true });
 }
 onSwipe($('cal'), shiftMonth);
-function goToday(){ const t=parts(INIT.today); cur={ y:t[0], m:t[1] }; loadMonth(); }
+function goToday(){ if (BUSY.main) return; const t=parts(INIT.today); cur={ y:t[0], m:t[1] }; loadMonth(); }
 
 function loadMonth(){
   $('monthTitle').textContent = `${cur.y} 年 ${cur.m} 月`;
-  const y=cur.y, m=cur.m;
-  fetchMonth(y,m,true).then(r=>{ if (y===cur.y && m===cur.m) { monthLeaves=r; renderCal(); } }).catch(e=>toast(e.message));
+  const y=cur.y, m=cur.m, cached = monthCache[mkey(y,m)];
+  if (cached) {                                   // 已經抓過：馬上顯示，背景再更新一次
+    monthLeaves = cached; renderCal();
+    fetchMonth(y,m,true).then(r=>{ if (y===cur.y && m===cur.m) { monthLeaves=r; renderCal(); } }).catch(()=>{});
+    prefetchAround(y,m);
+    return;
+  }
+  monthLeaves = []; renderCal();                  // 沒抓過：先畫空月曆並鎖住，等資料回來
+  setBusy('main', true);
+  fetchMonth(y,m)
+    .then(r=>{ if (y===cur.y && m===cur.m) { monthLeaves=r; renderCal(); } prefetchAround(y,m); })
+    .catch(e=>toast(e.message))
+    .finally(()=>setBusy('main', false));
 }
 
 /* 各月份假單快取（主月曆、請假月曆、當天詳情共用） */
 const monthCache = {};
 function mkey(y,m){ return y+'-'+pad(m); }
+const pending = {};   // 正在抓的月份，避免同一個月重複送出請求
 function fetchMonth(y,m,force){
   const k = mkey(y,m);
   if (!force && monthCache[k]) return Promise.resolve(monthCache[k]);
-  return api('getLeaves', ymd(y,m,1), ymd(y,m,daysIn(y,m))).then(r=>{ monthCache[k]=r; return r; });
+  if (!force && pending[k]) return pending[k];
+  const p = api('getLeaves', ymd(y,m,1), ymd(y,m,daysIn(y,m)))
+    .then(r=>{ monthCache[k]=r; return r; })
+    .finally(()=>{ if (pending[k]===p) delete pending[k]; });
+  pending[k] = p;
+  return p;
 }
 /** 某天所有人的假 */
 function leavesOn(ds){
@@ -608,6 +649,7 @@ function openForm(ds){
   openMask('formMask');
 }
 function pkShift(n){
+  if (BUSY.pk) return;
   PK.m+=n; if(PK.m<1){PK.m=12;PK.y--;} if(PK.m>12){PK.m=1;PK.y++;}
   pkLoad();
 }
@@ -616,9 +658,14 @@ $('fSlot').addEventListener('change', ()=>{ PK.slotTouched = true; });
 
 function pkLoad(){
   $('pkTitle').textContent = `${PK.y} 年 ${PK.m} 月`;
-  pkRender();                                  // 先畫（用快取），抓到資料再更新
   const y=PK.y, m=PK.m;
-  fetchMonth(y,m).then(()=>{ if (y===PK.y && m===PK.m) pkRender(); }).catch(e=>toast(e.message));
+  pkRender();
+  if (monthCache[mkey(y,m)]) { prefetchAround(y,m); return; }   // 已經有資料：直接可以選
+  setBusy('pk', true);                                           // 沒有資料：鎖住，等載入完才能點、才能再切換
+  fetchMonth(y,m)
+    .then(()=>{ if (y===PK.y && m===PK.m) pkRender(); prefetchAround(y,m); })
+    .catch(e=>toast(e.message))
+    .finally(()=>setBusy('pk', false));
 }
 
 function pkRender(){
