@@ -57,7 +57,7 @@
   .day.holiday .num { color:var(--bad); }
   .num { display:inline-flex; width:24px; height:24px; align-items:center; justify-content:center; border-radius:50%;
          font-weight:600; font-size:13px; }
-  .day.today .num { background:var(--accent); color:#fff; }
+  .day.today .num { background:#111827; color:#fff; }   /* 今天：深色圓圈（不用藍色，避免跟 Jessie 的藍色混淆） */
   .day { position:relative; }
   .hint { font-size:12px; color:var(--muted); text-align:center; margin-top:8px; }
   .hname { display:block; color:var(--bad); font-size:10px; line-height:1.3; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
@@ -94,7 +94,7 @@
   .pk.off { background:transparent; color:#c4c8cf; cursor:default; }
   .pk.hol { background:transparent; color:#f1a7a7; cursor:default; }
   .pk.full { background:transparent; color:#c4c8cf; cursor:default; text-decoration:line-through; }
-  .pk.today { box-shadow:inset 0 0 0 1.5px var(--accent); }
+  .pk.today { box-shadow:inset 0 0 0 1.5px #9ca3af; }
   .pk.sel { background:#111827; color:#fff; }
   .pk.sel small { color:#fff; }
   .pk.sel::after { content:'✓'; position:absolute; top:2px; right:4px; font-size:10px; font-weight:800; }
