@@ -106,6 +106,13 @@
   /* 近期清單的日期方塊 */
   .datebox { width:50px; flex-shrink:0; text-align:center; border-radius:10px; background:var(--soft); overflow:hidden; border:1px solid var(--line); }
   .datebox .dm { font-size:11px; color:#fff; padding:2px 0; font-weight:600; }
+  .datebox .bar { height:5px; }
+  .datebox .dd { padding-top:2px; }
+
+  /* 近期請假：月份小標題 */
+  .mon-head { display:flex; justify-content:space-between; align-items:baseline; margin:14px 0 2px; padding:6px 10px;
+              background:#f3f4f6; border-radius:8px; font-weight:700; font-size:14px; }
+  .sec-head + div .mon-head:first-child, #upcoming > .mon-head:first-child { margin-top:6px; }
   .datebox .dd { font-size:20px; font-weight:700; line-height:1.25; }
   .datebox .dw { font-size:11px; color:var(--muted); padding-bottom:3px; }
   .info { flex:1; min-width:0; }
@@ -118,7 +125,7 @@
   /* 近期清單 */
   .sec-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; }
   .item { display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--line); gap:10px; }
-  .item:last-child { border-bottom:0; }
+  .item:last-child, .item:has(+ .mon-head) { border-bottom:0; }
   .item .who { display:flex; align-items:center; gap:6px; font-weight:600; }
   .item .when { margin-top:2px; }
   .tag { font-size:11px; padding:1px 6px; border-radius:999px; background:#eef2ff; color:var(--accent); font-weight:500; }
@@ -608,13 +615,21 @@ function renderUpcoming(){
   const groups = groupLeaves(upcoming);
   renderUpcoming._groups = groups;
   if(!groups.length){ box.innerHTML='<div class="muted" style="padding:8px 0">接下來 90 天沒有人請假</div>'; return; }
-  box.innerHTML = groups.map((g,i)=>{
-    const [, sm, sd] = parts(g.start);
+  // 依「開始日的月份」分組，每個月一個小標題
+  let html = '', lastKey = '';
+  groups.forEach((g,i)=>{
+    const [gy, gm, gd] = parts(g.start);
+    const key = gy+'-'+gm;
+    if (key !== lastKey) {
+      const count = groups.filter(x=>{ const [yy,mm]=parts(x.start); return yy===gy && mm===gm; }).length;
+      html += `<div class="mon-head"><span>${gy!==parts(INIT.today)[0]?gy+' 年 ':''}${gm} 月</span><span class="muted">${count} 筆</span></div>`;
+      lastKey = key;
+    }
     const c = colorOf[g.name]||'#666';
     const when = g.start===g.end ? g.slot : `到 ${shortDate(g.end)}・共 ${g.days} 天${g.slot!=='全天'?'（'+g.slot+'）':''}`;
-    return `
+    html += `
     <div class="item">
-      <div class="datebox"><div class="dm" style="background:${c}">${sm} 月</div><div class="dd">${sd}</div><div class="dw">週${WD[wdIdx(g.start)]}</div></div>
+      <div class="datebox"><div class="bar" style="background:${c}"></div><div class="dd">${gd}</div><div class="dw">週${WD[wdIdx(g.start)]}</div></div>
       <div class="info">
         <div class="who">${esc(g.name)}<span class="tag ${isAlt(g.type)?'alt':''}">${esc(g.type)}</span></div>
         <div class="when muted">${esc(when)}</div>
@@ -622,7 +637,8 @@ function renderUpcoming(){
       </div>
       ${g.name===NAME?`<button class="danger" onclick="cancelGroup(${i})">取消</button>`:''}
     </div>`;
-  }).join('');
+  });
+  box.innerHTML = html;
 }
 
 function cancelGroup(i){
