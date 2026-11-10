@@ -83,9 +83,16 @@
                                font-size:11px; align-items:center; justify-content:center; margin-right:6px; vertical-align:1px; }
   .hname { display:block; color:var(--bad); font-size:10px; line-height:1.3; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .hname.work { color:var(--accent); }
-  .chip { display:block; border-radius:999px; padding:1px 4px; margin-top:3px; font-size:10.5px; line-height:1.4; font-weight:600;
-          white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:#fff; border:1.5px solid transparent; }
-  .chip.alt { background:#fff !important; }   /* 代理OP：空心 */
+  /* 每天分成上、下兩格：上格 = 上午、下格 = 下午；有人請就塗上那個人的顏色 */
+  .slots { display:flex; flex-direction:column; gap:2px; margin-top:3px; }
+  .slot { display:flex; gap:2px; height:17px; }
+  .slot.empty { border-radius:5px; background:repeating-linear-gradient(135deg, transparent 0 4px, rgba(0,0,0,.035) 4px 8px);
+                box-shadow:inset 0 0 0 1px rgba(0,0,0,.05); }
+  .seg { flex:1; min-width:0; border-radius:5px; display:flex; align-items:center; justify-content:center;
+         font-size:11px; font-weight:800; color:#fff; border:1.5px solid transparent; line-height:1; overflow:hidden; }
+  .seg.alt { background:#fff !important; }   /* 代理OP：空心框 */
+  .legend .ini { display:inline-flex; align-items:center; justify-content:center; width:18px; height:18px; border-radius:50%;
+                 color:#fff; font-size:10.5px; font-weight:800; margin-right:4px; vertical-align:-4px; }
 
   /* 近期清單的日期方塊 */
   .datebox { width:50px; flex-shrink:0; text-align:center; border-radius:10px; background:var(--soft); overflow:hidden; border:1px solid var(--line); }
@@ -249,6 +256,7 @@ const API_URL = 'https://script.google.com/macros/s/AKfycbznum_5tyCbBKmoigxujp26
 
 let FORCE = false, FORCE_OLD = '';
 let INIT = null, TOKEN = '', NAME = '', cur = { y:0, m:0 }, monthLeaves = [], upcoming = [], colorOf = {};
+const initialOf = {};
 const WD = '日一二三四五六';
 
 const $ = id => document.getElementById(id);
@@ -308,14 +316,20 @@ function api(fn,...args){
 call('getInitData').then(d=>{
   INIT = d;
   d.staff.forEach(s=>colorOf[s.name]=s.color);
+  // 名字縮寫：預設第一個字母；如果有人撞同一個字母，就改用前兩個字
+  d.staff.forEach(s=>{
+    const one = s.name.charAt(0).toUpperCase();
+    const clash = d.staff.some(o=>o.name!==s.name && o.name.charAt(0).toUpperCase()===one);
+    initialOf[s.name] = clash ? s.name.slice(0,2) : one;
+  });
   $('loginName').innerHTML = '<option value="">（選擇）</option>' + d.staff.map(s=>`<option>${esc(s.name)}</option>`).join('');
   $('fType').innerHTML = d.types.map(t=>`<option>${esc(t)}</option>`).join('');
   $('skipTxt').textContent = d.skipWeekends ? '區間請假會自動略過週六日與國定假日' : '區間請假會自動略過國定假日';
   $('legend').innerHTML =
-    d.staff.map(s=>`<span><span class="dot" style="background:${s.color}"></span>${esc(s.name)}</span>`).join('') +
+    d.staff.map(s=>`<span><span class="ini" style="background:${s.color}">${esc(initialOf[s.name])}</span>${esc(s.name)}</span>`).join('') +
     '<span class="sep"></span>' +
     d.types.map((t,i)=>`<span><span class="sw" style="${i?'':'background:var(--muted)'}"></span>${esc(t)}</span>`).join('') +
-    `<span>・上午、下午各限 ${d.limits.map(x=>x.limit).join('/')} 人</span>`;
+    `<span>・上格＝上午、下格＝下午，各限 ${d.limits.map(x=>x.limit).join('/')} 人</span>`;
   const t = parts(d.today); cur = { y:t[0], m:t[1] };
 
   TOKEN = load('leave_token'); NAME = load('leave_name');
@@ -413,12 +427,22 @@ function renderCal(){
     if (list.length && !freeTypes(list).length) cls.push('full');
     if (SEL.has(ds)) cls.push('sel');
     const hTag = h ? `<span class="hname ${h.type==='補班'?'work':''}">${esc(h.type==='補班'?'補班':h.name)}</span>` : '';
-    const chips = list.map(l=>{
-      const c = colorOf[l.name]||'#666', alt = isAlt(l.type);
-      const style = alt ? `border-color:${c};color:${c}` : `background:${c}`;
-      return `<span class="chip ${alt?'alt':''}" style="${style}">${esc(l.name)}${l.slot!=='全天'?' '+esc(l.slot[0]):''}</span>`;
-    }).join('');
-    html += `<div class="${cls.join(' ')}" onclick="tapDay('${ds}')"><div class="num">${d}</div>${hTag}${chips}</div>`;
+    // 上、下兩格：每格放這個時段的人（休假實心、代理OP 空心），全天假會同時塗滿兩格
+    const workday = !isOff(ds);
+    let slotsHtml = '';
+    if (workday || list.length) {
+      slotsHtml = '<div class="slots">' + ['上午','下午'].map(s=>{
+        const here = list.filter(l=>slotsOf(l.slot).indexOf(s)>=0)
+                         .sort((a,b)=>INIT.types.indexOf(a.type)-INIT.types.indexOf(b.type));
+        if (!here.length) return `<div class="slot empty" title="${s}"></div>`;
+        return '<div class="slot">' + here.map(l=>{
+          const c = colorOf[l.name]||'#666', alt = isAlt(l.type);
+          const style = alt ? `border-color:${c};color:${c}` : `background:${c}`;
+          return `<span class="seg ${alt?'alt':''}" style="${style}" title="${esc(l.name)} ${s} ${esc(l.type)}">${esc(initialOf[l.name]||l.name.charAt(0))}</span>`;
+        }).join('') + '</div>';
+      }).join('') + '</div>';
+    }
+    html += `<div class="${cls.join(' ')}" onclick="tapDay('${ds}')"><div class="num">${d}</div>${hTag}${slotsHtml}</div>`;
   }
   $('cal').innerHTML = html;
 }
