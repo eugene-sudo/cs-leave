@@ -387,22 +387,12 @@ let CONTACTS = {};   // 各人的 LINE 連結（登入後才從後端拿）
 function lineBtn(n){
   const url = CONTACTS[n];
   if (!url || n===NAME) return '';
-  return `<a class="line-btn" href="${esc(url)}" onclick="return openLine(this.href)">LINE</a>`;
+  return `<a class="line-btn" href="${esc(lineAppUrl(url))}">LINE</a>`;
 }
-/** 直接開 LINE App（line://），不經過 line.me 的「請啟動 LINE」中繼頁。
- *  2 秒後如果還停在這個畫面（例如手機沒裝 LINE），再提示可以改用網頁開。 */
-function openLine(url){
+/** 轉成 line.me/R/ 格式：iPhone 會直接交給 LINE App 開，不跳確認、也不會出現 line.me 中繼頁 */
+function lineAppUrl(url){
   const m = String(url).match(/\/ti\/p\/([^/?#]+)/);
-  if (!m) return true;                       // 不是個人連結格式 → 照一般連結開
-  let left = false;
-  const onHide = () => { if (document.visibilityState === 'hidden') left = true; };
-  document.addEventListener('visibilitychange', onHide);
-  location.href = 'line://ti/p/' + m[1];
-  setTimeout(()=>{
-    document.removeEventListener('visibilitychange', onHide);
-    if (!left) toast('沒有開啟 LINE 嗎？再按一次，或確認手機有安裝 LINE');
-  }, 2500);
-  return false;
+  return m ? 'https://line.me/R/ti/p/' + m[1] : url;
 }
 let INIT = null, TOKEN = '', NAME = '', cur = { y:0, m:0 }, monthLeaves = [], upcoming = [], colorOf = {};
 const initialOf = {};
@@ -979,7 +969,11 @@ function submitForm(){
 
 /* ---------- 改假別 ---------- */
 
-const TYPE_DESC = { '休假':'確定要休', '代理OP':'支援 OP', '鉛筆假':'先佔位，別人有急事可以請你讓出' };
+const TYPE_DESC = {
+  '休假':   '天塌下來也別找我 🏖️',
+  '代理OP': '心不甘情不願地去支援 😮‍💨',
+  '鉛筆假': '先畫個圈，人家真有急事再擦掉 ✏️',
+};
 let TYPE_TARGET = null;
 function openType(from, i){
   const r = from==='day' ? openDay._rows[i] : renderUpcoming._groups[i];
