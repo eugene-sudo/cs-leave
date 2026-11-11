@@ -7,7 +7,7 @@
 <meta name="theme-color" content="#0b1f36">
 <script>
   /* 先套用記住的主題，避免打開時閃一下別的顏色 */
-  try { var t = localStorage.getItem('leave_theme'); if (t === 'd' || t === 'e') document.documentElement.className = 'theme-' + t; } catch (e) {}
+  try { var t = localStorage.getItem('leave_theme'); if (['d','e','k','m4','m5'].indexOf(t) >= 0) document.documentElement.className = 'theme-' + t; } catch (e) {}
 </script>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -362,7 +362,7 @@ button.danger { background:#fdf2f2; color:#b42318; border-radius:6px; }
   html.theme-d .mon-head { background:#ece2c9 !important; color:#2b2416 !important; }
   html.theme-d .mon-head .muted { color:#8a6a12 !important; }
   html.theme-d button.primary { background:#7a5c12 !important; }
-  html.theme-d .fab { background:linear-gradient(135deg,#8a6a12,#b08a1e) !important; color:#fffaf0 !important; border:1px solid #c9a227 !important; box-shadow:0 6px 16px rgba(122,92,18,.3) !important; }
+  html.theme-d button.fab { background:linear-gradient(135deg,#8a6a12,#b08a1e) !important; color:#fffaf0 !important; border:1px solid #c9a227 !important; box-shadow:0 6px 16px rgba(122,92,18,.3) !important; }
   html.theme-d .nav button { background:#fffaf0 !important; color:#5a4410 !important; border-color:#e6dcc4 !important; }
   html.theme-d .wd { color:#a08a5a !important; }
   html.theme-d .pk { background:#f3ecdc !important; }
@@ -405,7 +405,7 @@ button.danger { background:#fdf2f2; color:#b42318; border-radius:6px; }
   html.theme-e .mon-head { background:#dfe7f0 !important; color:#14263a !important; }
   html.theme-e .mon-head .muted { color:#9a7a16 !important; }
   html.theme-e button.primary { background:#1e3a5f !important; }
-  html.theme-e .fab { background:#1e3a5f !important; color:#f3d77a !important; border:1px solid #b8921f !important; }
+  html.theme-e button.fab { background:#1e3a5f !important; color:#f3d77a !important; border:1px solid #b8921f !important; }
   html.theme-e .nav button { background:#fff !important; color:#1e3a5f !important; border-color:#d6e0ea !important; }
   html.theme-e .wd { color:#7b8ca0 !important; }
   html.theme-e .pk { background:#ebf0f5 !important; }
@@ -419,6 +419,145 @@ button.danger { background:#fdf2f2; color:#b42318; border-radius:6px; }
   .th-prev { height:58px; border-radius:8px; overflow:hidden; display:flex; flex-direction:column; margin-bottom:6px; border:1px solid rgba(0,0,0,.06); }
   .th-prev i { display:block; }
   .set-sec { font-size:12px; font-weight:700; color:var(--muted); margin:16px 0 4px; letter-spacing:.06em; }
+
+/* ================= 主題：銀漸層 ================= */
+html.theme-k { --bg:#e4e7eb; --card:#f7f8fa; --text:#1f2329; --muted:#6a717c; --line:#d9dde2; --accent:#3d4450; --soft:#f1f3f5; }
+html.theme-k body { background:linear-gradient(180deg,#eef0f3 0%,#dde1e6 100%) fixed; }
+html.theme-k header { border-bottom:1px solid #a9afb8 !important;
+  background:linear-gradient(180deg,#fdfdfe 0%,#e3e6ea 45%,#c9ced5 55%,#e9ebee 100%) !important;
+  box-shadow:0 2px 8px rgba(31,35,41,.18), inset 0 1px 0 #fff !important; }
+html.theme-k header h1 { color:#2a2f37 !important; text-shadow:0 1px 0 #fff; letter-spacing:.06em; }
+html.theme-k header h1 .gold { background:linear-gradient(180deg,#6b7280 0%,#2a2f37 50%,#6b7280 100%); -webkit-background-clip:text; background-clip:text; color:transparent !important; text-shadow:none; }
+html.theme-k .me b { color:#2a2f37 !important; } html.theme-k .me .ghost { color:#5b6270 !important; }
+html.theme-k #meAvatar { box-shadow:0 0 0 2px #fff, 0 0 0 3px #9aa1ab !important; }
+html.theme-k .card { border-radius:14px; }
+html.theme-k #rotCard { color:#1f2329 !important; border:1px solid #a9afb8 !important;
+  background:
+    repeating-linear-gradient(90deg, rgba(255,255,255,.10) 0 1px, rgba(0,0,0,.025) 1px 3px),
+    linear-gradient(160deg,#f6f7f9 0%,#cfd4db 30%,#eef0f3 50%,#b9bfc8 75%,#e6e9ed 100%) !important;
+  box-shadow:0 6px 16px rgba(31,35,41,.18), inset 0 1px 0 rgba(255,255,255,.9), inset 0 -1px 0 rgba(0,0,0,.08) !important; }
+html.theme-k .rot-head { border-bottom-color:rgba(61,68,80,.25) !important; }
+html.theme-k .rot-head b { color:#2a2f37 !important; } html.theme-k .rot-head b small { color:#6a717c !important; } html.theme-k .rot-head .ghost { color:#3d4450 !important; }
+html.theme-k .rot-row { border-bottom-color:rgba(61,68,80,.12) !important; }
+html.theme-k .rot-row .what { color:#565d69 !important; } html.theme-k .rot-row .who { color:#1f2329 !important; }
+html.theme-k .rot-row .next { color:#565d69 !important; } html.theme-k .rot-row .next b { color:#2a2f37 !important; }
+html.theme-k .rot-row.me { background:rgba(255,255,255,.6) !important; box-shadow:inset 3px 0 0 #3d4450, 0 1px 3px rgba(0,0,0,.08) !important; }
+html.theme-k .rot-badge { background:linear-gradient(180deg,#4b5361,#1f2329) !important; color:#f3f4f6 !important; box-shadow:inset 0 1px 0 rgba(255,255,255,.2); }
+html.theme-k .rot-badge.soon { background:linear-gradient(180deg,#fff,#e5e7eb) !important; color:#2a2f37 !important; border-color:#9aa1ab !important; }
+html.theme-k #rotCard .ini-sm { box-shadow:0 0 0 1.5px #fff !important; }
+html.theme-k .rot-tbl th { color:#2a2f37 !important; border-bottom-color:rgba(61,68,80,.3) !important; }
+html.theme-k .rot-tbl td { color:#3d4450 !important; border-bottom-color:rgba(61,68,80,.1) !important; } html.theme-k .rot-tbl td.mine { color:#111827 !important; font-weight:800; }
+html.theme-k .card:not(#rotCard) { background:#f7f8fa !important; border-color:#d6dae0 !important; box-shadow:0 2px 6px rgba(31,35,41,.06), inset 0 1px 0 #fff !important; }
+html.theme-k .sheet { background:linear-gradient(180deg,#fbfbfc,#eef0f3) !important; }
+html.theme-k .nav { border-bottom-color:#cfd4db !important; }
+html.theme-k .nav button { background:linear-gradient(180deg,#ffffff,#e3e6ea) !important; color:#2a2f37 !important; border:1px solid #b9bfc8 !important; box-shadow:inset 0 1px 0 #fff, 0 1px 2px rgba(0,0,0,.08); }
+html.theme-k .wd { color:#7d848f !important; }
+html.theme-k .day { background:linear-gradient(180deg,#f4f5f7,#e8ebee) !important; } html.theme-k .day.weekend, html.theme-k .day.empty { background:transparent !important; }
+html.theme-k .day.full { background:linear-gradient(180deg,#e6e9ed,#d6dbe1) !important; }
+html.theme-k .day.today .num { background:linear-gradient(180deg,#6b7280,#2a2f37) !important; color:#fff !important; box-shadow:0 0 0 2px #fff, 0 0 0 3px #9aa1ab; }
+html.theme-k .stripe { background:linear-gradient(180deg,#ffffff,#f3f4f6) !important; box-shadow:inset 0 0 0 1px #dfe3e7 !important; }
+html.theme-k .mon-head { background:linear-gradient(180deg,#f9fafb 0%,#d5dae0 50%,#eceef1 100%) !important; color:#1f2329 !important; border:1px solid #c3c8cf; }
+html.theme-k .mon-head .muted { color:#3d4450 !important; }
+html.theme-k .datebox { background:linear-gradient(180deg,#fff,#eef0f3) !important; border-color:#cfd4db !important; }
+html.theme-k .tag { background:linear-gradient(180deg,#fff,#e9ecef) !important; color:#3d4450 !important; border:1px solid #d6dae0; }
+html.theme-k button.primary { background:linear-gradient(180deg,#5b6372,#2a2f37) !important; box-shadow:inset 0 1px 0 rgba(255,255,255,.2); }
+html.theme-k button.fab { border:1px solid #8f96a1 !important; color:#1f2329 !important;
+  background:linear-gradient(180deg,#ffffff 0%,#dfe3e8 45%,#bcc2ca 55%,#eef0f3 100%) !important;
+  box-shadow:0 6px 16px rgba(31,35,41,.28), inset 0 1px 0 #fff !important; }
+html.theme-k .pk { background:linear-gradient(180deg,#f4f5f7,#e8ebee) !important; } html.theme-k .pk.sel { background:linear-gradient(180deg,#5b6372,#2a2f37) !important; }
+
+/* ================= 主題：鈦藍 ================= */
+html.theme-m4 { --bg:#e8edf3; --card:#f7f9fc; --text:#18263a; --muted:#5e6f86; --line:#dbe3ed; --accent:#203a5e; --soft:#f7f9fc; }
+html.theme-m4 body { background:linear-gradient(180deg,#e8edf3,#d3dce7) fixed; }
+html.theme-m4 header { border-bottom:1px solid #6a88b3 !important; box-shadow:0 2px 8px rgba(0,0,0,.15), inset 0 1px 0 rgba(255,255,255,.8) !important;
+  background:linear-gradient(180deg,#f4f8ff 0%,#c9d7ea 45%,#7f9bc0 55%,#dfe8f5 100%) !important; }
+html.theme-m4 header h1 { color:#1d3557 !important; text-shadow:0 1px 0 rgba(255,255,255,.5); letter-spacing:.06em; }
+html.theme-m4 header h1 .gold { color:#1d3557 !important; opacity:.75; }
+html.theme-m4 .me b { color:#1d3557 !important; } html.theme-m4 .me .ghost { color:#1d3557 !important; opacity:.7; }
+html.theme-m4 #meAvatar { box-shadow:0 0 0 2px #fff, 0 0 0 3px #6a88b3 !important; }
+html.theme-m4 #rotCard { color:#18263a !important; border:1px solid #6a88b3 !important;
+  background:repeating-linear-gradient(90deg, rgba(255,255,255,.10) 0 1px, rgba(0,0,0,.03) 1px 3px),
+    linear-gradient(160deg,#f4f8ff 0%,#c9d7ea 30%,#dfe8f5 50%,#7f9bc0 75%,#c9d7ea 100%) !important;
+  box-shadow:0 6px 16px rgba(0,0,0,.16), inset 0 1px 0 rgba(255,255,255,.8), inset 0 -1px 0 rgba(0,0,0,.08) !important; }
+html.theme-m4 .rot-head { border-bottom-color:rgba(0,0,0,.18) !important; }
+html.theme-m4 .rot-head b { color:#18263a !important; } html.theme-m4 .rot-head b small { color:#5e6f86 !important; } html.theme-m4 .rot-head .ghost { color:#18263a !important; opacity:.8; }
+html.theme-m4 .rot-row { border-bottom-color:rgba(0,0,0,.08) !important; }
+html.theme-m4 .rot-row .what, html.theme-m4 .rot-row .next { color:#5e6f86 !important; } html.theme-m4 .rot-row .who, html.theme-m4 .rot-row .next b { color:#18263a !important; }
+html.theme-m4 .rot-row.me { background:rgba(255,255,255,.55) !important; box-shadow:inset 3px 0 0 #203a5e !important; }
+html.theme-m4 .rot-badge { background:linear-gradient(180deg,#4f6f9a,#203a5e) !important; color:#fff !important; box-shadow:inset 0 1px 0 rgba(255,255,255,.25); }
+html.theme-m4 .rot-badge.soon { background:rgba(255,255,255,.5) !important; color:#203a5e !important; border-color:#6a88b3 !important; }
+html.theme-m4 #rotCard .ini-sm { box-shadow:0 0 0 1.5px #fff !important; }
+html.theme-m4 .rot-tbl th { color:#18263a !important; border-bottom-color:rgba(0,0,0,.2) !important; }
+html.theme-m4 .rot-tbl td { color:#18263a !important; border-bottom-color:rgba(0,0,0,.08) !important; } html.theme-m4 .rot-tbl td.mine { font-weight:800; text-decoration:underline; }
+html.theme-m4 .card:not(#rotCard) { background:#f7f9fc !important; border-color:#dbe3ed !important; box-shadow:0 2px 6px rgba(0,0,0,.05), inset 0 1px 0 #fff !important; }
+html.theme-m4 .sheet { background:linear-gradient(180deg,#f7f9fc,#eef3f9) !important; }
+html.theme-m4 .nav { border-bottom-color:#dbe3ed !important; }
+html.theme-m4 .nav button { background:linear-gradient(180deg,#fff,#e1e9f3) !important; color:#203a5e !important; border:1px solid #dbe3ed !important; box-shadow:inset 0 1px 0 #fff, 0 1px 2px rgba(0,0,0,.08); }
+html.theme-m4 .wd { color:#5e6f86 !important; }
+html.theme-m4 .day { background:linear-gradient(180deg,#eef3f9,#e1e9f3) !important; } html.theme-m4 .day.weekend, html.theme-m4 .day.empty { background:transparent !important; }
+html.theme-m4 .day.full { background:linear-gradient(180deg,#e1e9f3,#c9d7ea) !important; }
+html.theme-m4 .day.today .num { background:linear-gradient(180deg,#6a88b3,#203a5e) !important; color:#fff !important; box-shadow:0 0 0 2px #fff, 0 0 0 3px #6a88b3; }
+html.theme-m4 .stripe { background:linear-gradient(180deg,#fff,#eef3f9) !important; box-shadow:inset 0 0 0 1px #dbe3ed !important; }
+html.theme-m4 .mon-head { background:linear-gradient(180deg,#f4f8ff 0%,#c9d7ea 50%,#dfe8f5 100%) !important; color:#1d3557 !important; border:1px solid #6a88b3; }
+html.theme-m4 .mon-head .muted { color:#1d3557 !important; opacity:.8; }
+html.theme-m4 .datebox { background:linear-gradient(180deg,#fff,#eef3f9) !important; border-color:#dbe3ed !important; }
+html.theme-m4 .tag { background:linear-gradient(180deg,#fff,#e1e9f3) !important; color:#203a5e !important; border:1px solid #dbe3ed; }
+html.theme-m4 button.primary { background:linear-gradient(180deg,#4f6f9a,#203a5e) !important; box-shadow:inset 0 1px 0 rgba(255,255,255,.2); }
+html.theme-m4 button.fab { border:1px solid #6a88b3 !important; color:#1d3557 !important;
+  background:linear-gradient(180deg,#f4f8ff 0%,#c9d7ea 45%,#7f9bc0 55%,#dfe8f5 100%) !important;
+  box-shadow:0 6px 16px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.8) !important; }
+html.theme-m4 .pk { background:linear-gradient(180deg,#eef3f9,#e1e9f3) !important; } html.theme-m4 .pk.sel { background:linear-gradient(180deg,#4f6f9a,#203a5e) !important; }
+
+
+
+/* ================= 主題：槍灰 ================= */
+html.theme-m5 { --bg:#e6e7e9; --card:#f6f7f8; --text:#1b1d21; --muted:#62666e; --line:#d9dbdf; --accent:#24272c; --soft:#f6f7f8; }
+html.theme-m5 body { background:linear-gradient(180deg,#e6e7e9,#cfd1d5) fixed; }
+html.theme-m5 header { border-bottom:1px solid #3a3e45 !important; box-shadow:0 2px 8px rgba(0,0,0,.15), inset 0 1px 0 rgba(255,255,255,.8) !important;
+  background:linear-gradient(180deg,#7a7f88 0%,#50555d 45%,#2e3137 55%,#5c616a 100%) !important; }
+html.theme-m5 header h1 { color:#f2f3f5 !important; text-shadow:0 1px 0 rgba(255,255,255,.5); letter-spacing:.06em; }
+html.theme-m5 header h1 .gold { color:#f2f3f5 !important; opacity:.75; }
+html.theme-m5 .me b { color:#f2f3f5 !important; } html.theme-m5 .me .ghost { color:#f2f3f5 !important; opacity:.7; }
+html.theme-m5 #meAvatar { box-shadow:0 0 0 2px #fff, 0 0 0 3px #3a3e45 !important; }
+html.theme-m5 #rotCard { color:#f2f3f5 !important; border:1px solid #3a3e45 !important;
+  background:repeating-linear-gradient(90deg, rgba(255,255,255,.10) 0 1px, rgba(0,0,0,.03) 1px 3px),
+    linear-gradient(160deg,#7a7f88 0%,#50555d 30%,#5c616a 50%,#2e3137 75%,#50555d 100%) !important;
+  box-shadow:0 6px 16px rgba(0,0,0,.16), inset 0 1px 0 rgba(255,255,255,.8), inset 0 -1px 0 rgba(0,0,0,.08) !important; }
+html.theme-m5 .rot-head { border-bottom-color:rgba(0,0,0,.18) !important; }
+html.theme-m5 .rot-head b { color:#f2f3f5 !important; } html.theme-m5 .rot-head b small { color:#c4c8ce !important; } html.theme-m5 .rot-head .ghost { color:#f2f3f5 !important; opacity:.8; }
+html.theme-m5 .rot-row { border-bottom-color:rgba(0,0,0,.08) !important; }
+html.theme-m5 .rot-row .what, html.theme-m5 .rot-row .next { color:#c4c8ce !important; } html.theme-m5 .rot-row .who, html.theme-m5 .rot-row .next b { color:#f2f3f5 !important; }
+html.theme-m5 .rot-row.me { background:rgba(255,255,255,.12) !important; box-shadow:inset 3px 0 0 #fff !important; }
+html.theme-m5 .rot-badge { background:linear-gradient(180deg,#5a5f68,#24272c) !important; color:#fff !important; box-shadow:inset 0 1px 0 rgba(255,255,255,.25); }
+html.theme-m5 .rot-badge.soon { background:rgba(255,255,255,.5) !important; color:#24272c !important; border-color:#3a3e45 !important; }
+html.theme-m5 #rotCard .ini-sm { box-shadow:0 0 0 1.5px #fff !important; }
+html.theme-m5 .rot-tbl th { color:#f2f3f5 !important; border-bottom-color:rgba(0,0,0,.2) !important; }
+html.theme-m5 .rot-tbl td { color:#f2f3f5 !important; border-bottom-color:rgba(0,0,0,.08) !important; } html.theme-m5 .rot-tbl td.mine { font-weight:800; text-decoration:underline; }
+html.theme-m5 .card:not(#rotCard) { background:#f6f7f8 !important; border-color:#d9dbdf !important; box-shadow:0 2px 6px rgba(0,0,0,.05), inset 0 1px 0 #fff !important; }
+html.theme-m5 .sheet { background:linear-gradient(180deg,#f6f7f8,#eff0f2) !important; }
+html.theme-m5 .nav { border-bottom-color:#d9dbdf !important; }
+html.theme-m5 .nav button { background:linear-gradient(180deg,#fff,#e3e5e8) !important; color:#24272c !important; border:1px solid #d9dbdf !important; box-shadow:inset 0 1px 0 #fff, 0 1px 2px rgba(0,0,0,.08); }
+html.theme-m5 .wd { color:#62666e !important; }
+html.theme-m5 .day { background:linear-gradient(180deg,#eff0f2,#e3e5e8) !important; } html.theme-m5 .day.weekend, html.theme-m5 .day.empty { background:transparent !important; }
+html.theme-m5 .day.full { background:linear-gradient(180deg,#e3e5e8,#50555d) !important; }
+html.theme-m5 .day.today .num { background:linear-gradient(180deg,#5a5f68,#1b1d21) !important; color:#fff !important; box-shadow:0 0 0 2px #fff, 0 0 0 3px #3a3e45; }
+html.theme-m5 .stripe { background:linear-gradient(180deg,#fff,#eff0f2) !important; box-shadow:inset 0 0 0 1px #d9dbdf !important; }
+html.theme-m5 .mon-head { background:linear-gradient(180deg,#7a7f88 0%,#50555d 50%,#5c616a 100%) !important; color:#f2f3f5 !important; border:1px solid #3a3e45; }
+html.theme-m5 .mon-head .muted { color:#f2f3f5 !important; opacity:.8; }
+html.theme-m5 .datebox { background:linear-gradient(180deg,#fff,#eff0f2) !important; border-color:#d9dbdf !important; }
+html.theme-m5 .tag { background:linear-gradient(180deg,#fff,#e3e5e8) !important; color:#24272c !important; border:1px solid #d9dbdf; }
+html.theme-m5 button.primary { background:linear-gradient(180deg,#5a5f68,#24272c) !important; box-shadow:inset 0 1px 0 rgba(255,255,255,.2); }
+html.theme-m5 button.fab { border:1px solid #3a3e45 !important; color:#f2f3f5 !important;
+  background:linear-gradient(180deg,#7a7f88 0%,#50555d 45%,#2e3137 55%,#5c616a 100%) !important;
+  box-shadow:0 6px 16px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.8) !important; }
+html.theme-m5 .pk { background:linear-gradient(180deg,#eff0f2,#e3e5e8) !important; } html.theme-m5 .pk.sel { background:linear-gradient(180deg,#5a5f68,#24272c) !important; }
+
+html.theme-m5 .day.full { background:linear-gradient(180deg,#e3e5e8,#cfd2d7) !important; }
+html.theme-m5 .rot-row.me { background:rgba(255,255,255,.10) !important; }
+html.theme-m5 .rot-badge { background:linear-gradient(180deg,#f2f3f5,#c9ccd1) !important; color:#1b1d21 !important; }
+html.theme-m5 .rot-badge.soon { background:transparent !important; color:#f2f3f5 !important; border-color:#9aa0a8 !important; }
+html.theme-m5 header h1 { text-shadow:0 1px 0 rgba(0,0,0,.45) !important; } html.theme-m5 header h1 .gold { opacity:.85; }
+
 </style>
 </head>
 <body>
@@ -1285,8 +1424,11 @@ const THEMES = [
   { id:'c', name:'深藍金', bar:'#0b1f36', card:'#12304f', body:'#fdfcf8', meta:'#0b1f36' },
   { id:'d', name:'香檳金', bar:'#f8f3e8', card:'#efe2bf', body:'#fbf8f1', meta:'#f8f3e8' },
   { id:'e', name:'霧藍灰', bar:'#f4f7fa', card:'#d8e3ee', body:'#f6f8fb', meta:'#f4f7fa' },
+  { id:'k',  name:'銀漸層', bar:'linear-gradient(180deg,#fdfdfe,#c9ced5,#e9ebee)', card:'linear-gradient(160deg,#f6f7f9,#cfd4db,#eef0f3,#b9bfc8)', body:'#f7f8fa', meta:'#e3e6ea' },
+  { id:'m4', name:'鈦藍',   bar:'linear-gradient(180deg,#f4f8ff,#c9d7ea,#7f9bc0,#dfe8f5)', card:'linear-gradient(160deg,#f4f8ff,#c9d7ea,#dfe8f5,#7f9bc0)', body:'#f7f9fc', meta:'#c9d7ea' },
+  { id:'m5', name:'槍灰',   bar:'linear-gradient(180deg,#7a7f88,#50555d,#2e3137,#5c616a)', card:'linear-gradient(160deg,#7a7f88,#50555d,#5c616a,#2e3137)', body:'#f6f7f8', meta:'#3a3e45' },
 ];
-function curTheme(){ const c = document.documentElement.className.match(/theme-(d|e)/); return c ? c[1] : 'c'; }
+function curTheme(){ const c = document.documentElement.className.match(/theme-(d|e|k|m4|m5)\b/); return c ? c[1] : 'c'; }
 function setTheme(id){
   document.documentElement.className = id==='c' ? '' : 'theme-' + id;
   store('leave_theme', id==='c' ? '' : id);
