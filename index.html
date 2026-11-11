@@ -606,8 +606,8 @@ function busyBtn(btn, on, text){
   if (!btn) return;
   const box = btn.closest('.rq, .dt-row, .item') || btn.parentNode;
   box.querySelectorAll('button').forEach(b=>{ b.disabled = on; });
-  if (on) { btn._t = btn.textContent; btn.textContent = text || '處理中…'; }
-  else if (btn._t) btn.textContent = btn._t;
+  if (on) { btn._h = btn.innerHTML; btn.textContent = text || '處理中…'; }
+  else if (btn._h !== undefined) btn.innerHTML = btn._h;      // 還原原本的內容（包含樣式）
 }
 /* 載入中鎖定：資料還沒回來前，不能再滑動或按箭頭切換月份 */
 const BUSY = { main:false, pk:false };
@@ -851,7 +851,7 @@ function renderUpcoming(){
         <div class="when muted">${esc(when)}</div>
         ${g.reason?`<div class="muted" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(g.reason)}</div>`:''}
       </div>
-      ${(ADMIN || g.name===NAME)?`<div class="dt-btns"><button class="mini" onclick="openType('group',${i})">改假別</button><button class="danger" onclick="cancelGroup(${i},this)">取消</button></div>`:''}
+      ${(ADMIN || g.name===NAME)?`<button class="danger" onclick="cancelGroup(${i},this)">取消</button>`:''}
     </div>`;
   });
   box.innerHTML = html;
