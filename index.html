@@ -367,7 +367,22 @@ let CONTACTS = {};   // 各人的 LINE 連結（登入後才從後端拿）
 function lineBtn(n){
   const url = CONTACTS[n];
   if (!url || n===NAME) return '';
-  return `<a class="line-btn" href="${esc(url)}" target="_blank" rel="noopener">LINE</a>`;
+  return `<a class="line-btn" href="${esc(url)}" onclick="return openLine(this.href)">LINE</a>`;
+}
+/** 直接開 LINE App（line://），不經過 line.me 的「請啟動 LINE」中繼頁。
+ *  2 秒後如果還停在這個畫面（例如手機沒裝 LINE），再提示可以改用網頁開。 */
+function openLine(url){
+  const m = String(url).match(/\/ti\/p\/([^/?#]+)/);
+  if (!m) return true;                       // 不是個人連結格式 → 照一般連結開
+  let left = false;
+  const onHide = () => { if (document.visibilityState === 'hidden') left = true; };
+  document.addEventListener('visibilitychange', onHide);
+  location.href = 'line://ti/p/' + m[1];
+  setTimeout(()=>{
+    document.removeEventListener('visibilitychange', onHide);
+    if (!left) toast('沒有開啟 LINE 嗎？再按一次，或確認手機有安裝 LINE');
+  }, 2500);
+  return false;
 }
 let INIT = null, TOKEN = '', NAME = '', cur = { y:0, m:0 }, monthLeaves = [], upcoming = [], colorOf = {};
 const initialOf = {};
