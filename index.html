@@ -5,6 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>CS Leave</title>
 <meta name="theme-color" content="#0b1f36">
+<script>
+  /* 先套用記住的主題，避免打開時閃一下別的顏色 */
+  try { var t = localStorage.getItem('leave_theme'); if (t === 'd' || t === 'e') document.documentElement.className = 'theme-' + t; } catch (e) {}
+</script>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="CS Leave">
@@ -309,6 +313,100 @@ button.danger { background:#fdf2f2; color:#b42318; border-radius:6px; }
 #loginView h2 { color:#0b1f36; letter-spacing:.04em; }
 #ptr.ready i, #ptr.spin i { border-top-color:#c9a227; }
 #ptr.ready span { color:#8a6d12; }
+
+  /* ================= 主題 D：香檳金（淺暖）================= */
+  /* D 香檳金（淺色暖調） */
+  html.theme-d { --bg:#f1ece1; --text:#2b2416; --muted:#7c705a; --line:#e3dac6; --accent:#7a5c12; }
+  html.theme-d header { background:#f8f3e8 !important; border-bottom:2px solid #c9a227 !important; }
+  html.theme-d header h1 { color:#2b2416 !important; }
+  html.theme-d header h1 .gold { color:#b08a1e !important; }
+  html.theme-d .me b { color:#2b2416 !important; }
+  html.theme-d .me .ghost { color:#7c705a !important; }
+  html.theme-d #rotCard { background:linear-gradient(135deg,#f7efd9,#efe2bf) !important; color:#2b2416 !important; border:1px solid #e0cd96 !important; box-shadow:0 4px 14px rgba(122,92,18,.12) !important; }
+  html.theme-d .rot-head { border-bottom-color:rgba(176,138,30,.45) !important; }
+  html.theme-d .rot-head b { color:#8a6a12 !important; }
+  html.theme-d .rot-head b small { color:#a0916f !important; }
+  html.theme-d .rot-head .ghost { color:#7c705a !important; }
+  html.theme-d .rot-row { border-bottom-color:rgba(122,92,18,.12) !important; }
+  html.theme-d .rot-row .what { color:#8a7c5e !important; }
+  html.theme-d .rot-row .who { color:#2b2416 !important; }
+  html.theme-d .rot-row .next { color:#8a7c5e !important; }
+  html.theme-d .rot-row .next b { color:#4a3f2a !important; }
+  html.theme-d .rot-row.me { background:rgba(255,255,255,.55) !important; box-shadow:inset 3px 0 0 #b08a1e !important; }
+  html.theme-d .rot-badge { background:#b08a1e !important; color:#fffaf0 !important; }
+  html.theme-d .rot-badge.soon { background:transparent !important; color:#8a6a12 !important; border-color:#c9a227 !important; }
+  html.theme-d #rotCard .ini-sm { box-shadow:0 0 0 1.5px #fff !important; }
+  html.theme-d .rot-tbl th { color:#8a6a12 !important; border-bottom-color:rgba(176,138,30,.45) !important; }
+  html.theme-d .rot-tbl td { color:#4a3f2a !important; border-bottom-color:rgba(122,92,18,.12) !important; }
+  html.theme-d .rot-tbl tr.cur td { color:#2b2416 !important; }
+  html.theme-d .rot-tbl td.mine { color:#9a7414 !important; }
+  html.theme-d .card:not(#rotCard) { background:#fbf8f1 !important; border-color:#e8dfca !important; }
+  html.theme-d .sheet { background:#fbf8f1 !important; }
+  html.theme-d .day { background:#f3ecdc !important; }
+  html.theme-d .day.weekend, html.theme-d .day.empty { background:transparent !important; }
+  html.theme-d .day.full { background:#efe1bb !important; }
+  html.theme-d .day.today .num { background:#b08a1e !important; color:#fff !important; }
+  html.theme-d .stripe { background-color:rgba(255,255,255,.75) !important; }
+  html.theme-d .mon-head { background:#ece2c9 !important; color:#2b2416 !important; }
+  html.theme-d .mon-head .muted { color:#8a6a12 !important; }
+  html.theme-d button.primary { background:#7a5c12 !important; }
+  html.theme-d .fab { background:linear-gradient(135deg,#8a6a12,#b08a1e) !important; color:#fffaf0 !important; border:1px solid #c9a227 !important; box-shadow:0 6px 16px rgba(122,92,18,.3) !important; }
+  html.theme-d .nav button { background:#fffaf0 !important; color:#5a4410 !important; border-color:#e6dcc4 !important; }
+  html.theme-d .wd { color:#a08a5a !important; }
+  html.theme-d .pk { background:#f3ecdc !important; }
+  html.theme-d .pk.blank, html.theme-d .pk.off, html.theme-d .pk.hol, html.theme-d .pk.full { background:transparent !important; }
+  html.theme-d .pk.today { box-shadow:inset 0 0 0 1.5px #b08a1e !important; }
+  html.theme-d #loginView .card { background:#fbf8f1 !important; }
+  /* ================= 主題 E：霧藍灰（淺冷）================= */
+  /* E 霧藍灰（淺色冷調） */
+  html.theme-e { --bg:#e9eef3; --text:#14263a; --muted:#64748b; --line:#d9e1ea; --accent:#1e3a5f; }
+  html.theme-e header { background:#f4f7fa !important; border-bottom:2px solid #b8921f !important; }
+  html.theme-e header h1 { color:#14263a !important; }
+  html.theme-e header h1 .gold { color:#a8841c !important; }
+  html.theme-e .me b { color:#14263a !important; }
+  html.theme-e .me .ghost { color:#64748b !important; }
+  html.theme-e #rotCard { background:linear-gradient(135deg,#e6edf5,#d8e3ee) !important; color:#14263a !important; border:1px solid #c7d5e4 !important; box-shadow:0 4px 14px rgba(20,38,58,.10) !important; }
+  html.theme-e .rot-head { border-bottom-color:rgba(184,146,31,.45) !important; }
+  html.theme-e .rot-head b { color:#9a7a16 !important; }
+  html.theme-e .rot-head b small { color:#7b8ca0 !important; }
+  html.theme-e .rot-head .ghost { color:#5b6b80 !important; }
+  html.theme-e .rot-row { border-bottom-color:rgba(20,38,58,.08) !important; }
+  html.theme-e .rot-row .what { color:#5f7085 !important; }
+  html.theme-e .rot-row .who { color:#14263a !important; }
+  html.theme-e .rot-row .next { color:#5f7085 !important; }
+  html.theme-e .rot-row .next b { color:#24384f !important; }
+  html.theme-e .rot-row.me { background:rgba(255,255,255,.6) !important; box-shadow:inset 3px 0 0 #b8921f !important; }
+  html.theme-e .rot-badge { background:#1e3a5f !important; color:#f3d77a !important; }
+  html.theme-e .rot-badge.soon { background:transparent !important; color:#1e3a5f !important; border-color:#8aa2bd !important; }
+  html.theme-e #rotCard .ini-sm { box-shadow:0 0 0 1.5px #fff !important; }
+  html.theme-e .rot-tbl th { color:#9a7a16 !important; border-bottom-color:rgba(184,146,31,.45) !important; }
+  html.theme-e .rot-tbl td { color:#24384f !important; border-bottom-color:rgba(20,38,58,.08) !important; }
+  html.theme-e .rot-tbl tr.cur td { color:#14263a !important; }
+  html.theme-e .rot-tbl td.mine { color:#9a7a16 !important; }
+  html.theme-e .card:not(#rotCard) { background:#f6f8fb !important; border-color:#dde5ee !important; }
+  html.theme-e .sheet { background:#f6f8fb !important; }
+  html.theme-e .day { background:#ebf0f5 !important; }
+  html.theme-e .day.weekend, html.theme-e .day.empty { background:transparent !important; }
+  html.theme-e .day.full { background:#f4ecd2 !important; }
+  html.theme-e .day.today .num { background:#1e3a5f !important; color:#f3d77a !important; }
+  html.theme-e .stripe { background-color:rgba(255,255,255,.8) !important; }
+  html.theme-e .mon-head { background:#dfe7f0 !important; color:#14263a !important; }
+  html.theme-e .mon-head .muted { color:#9a7a16 !important; }
+  html.theme-e button.primary { background:#1e3a5f !important; }
+  html.theme-e .fab { background:#1e3a5f !important; color:#f3d77a !important; border:1px solid #b8921f !important; }
+  html.theme-e .nav button { background:#fff !important; color:#1e3a5f !important; border-color:#d6e0ea !important; }
+  html.theme-e .wd { color:#7b8ca0 !important; }
+  html.theme-e .pk { background:#ebf0f5 !important; }
+  html.theme-e .pk.blank, html.theme-e .pk.off, html.theme-e .pk.hol, html.theme-e .pk.full { background:transparent !important; }
+  html.theme-e .pk.today { box-shadow:inset 0 0 0 1.5px #1e3a5f !important; }
+  html.theme-e #loginView .card { background:#f6f8fb !important; }
+  /* 設定：主題選擇 */
+  .th-opts { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:8px; }
+  .th-opt { border:2px solid var(--line); border-radius:12px; padding:6px; background:transparent; color:var(--text); font-size:13px; font-weight:600; }
+  .th-opt.cur { border-color:#c9a227; }
+  .th-prev { height:58px; border-radius:8px; overflow:hidden; display:flex; flex-direction:column; margin-bottom:6px; border:1px solid rgba(0,0,0,.06); }
+  .th-prev i { display:block; }
+  .set-sec { font-size:12px; font-weight:700; color:var(--muted); margin:16px 0 4px; letter-spacing:.06em; }
 </style>
 </head>
 <body>
@@ -334,7 +432,7 @@ button.danger { background:#fdf2f2; color:#b42318; border-radius:6px; }
     <h1>CS <span class="gold">LEAVE</span></h1>
     <div class="me">
       <span class="avatar" id="meAvatar"></span><b id="meName"></b>
-      <button class="ghost" id="btnPin" onclick="openPin()">改PIN</button>
+      <button class="ghost" id="btnPin" onclick="openSettings()">設定</button>
       <button class="ghost" id="btnAdmin" style="display:none;color:var(--text);font-weight:700" onclick="openAdmin()">管理</button>
       <button class="ghost" onclick="logout()">登出</button>
     </div>
@@ -406,6 +504,20 @@ button.danger { background:#fdf2f2; color:#b42318; border-radius:6px; }
       <button onclick="closeMask('formMask')">取消</button>
       <button class="primary" id="fSubmit" onclick="submitForm()">送出</button>
     </div>
+  </div>
+</div>
+
+<!-- 設定：主題＋改 PIN -->
+<div class="mask" id="setMask" onclick="if(event.target===this)closeMask('setMask')">
+  <div class="sheet">
+    <b style="font-size:17px">設定</b>
+    <div class="set-sec">畫面主題（只會改你自己的手機）</div>
+    <div class="th-opts" id="thOpts"></div>
+    <div id="setPinBox">
+      <div class="set-sec">帳號</div>
+      <button style="width:100%;padding:12px" onclick="closeMask('setMask');openPin()">修改 PIN 碼</button>
+    </div>
+    <div class="actions"><button onclick="closeMask('setMask')">關閉</button></div>
   </div>
 </div>
 
@@ -590,7 +702,7 @@ function showApp(){
   $('meName').textContent = NAME;
   $('meAvatar').textContent = ADMIN ? '管' : NAME.charAt(0).toUpperCase();
   $('meAvatar').style.background = ADMIN ? '#111827' : (colorOf[NAME] || '#6b7280');
-  $('btnPin').style.display = ADMIN ? 'none' : '';
+  $('btnPin').style.display = '';   // 管理員也可以換主題
   $('btnAdmin').style.display = ADMIN ? '' : 'none';
   renderRotation();
   refresh();
@@ -610,7 +722,7 @@ function doLogin(){
     if (r.mustChange) openPin(true, pin); else showApp();
   }).catch(e=>showErr('loginErr',e.message)).finally(()=>{ btn.disabled=false; btn.textContent='登入'; });
 }
-function logout(){ TOKEN=''; store('leave_token',''); store('leave_admin',''); if (ADMIN) { ADMIN=false; NAME=load('leave_name'); } closeMask('adminMask'); closeMask('askMask'); closeMask('typeMask'); REQS=[]; CONTACTS={}; $('reqCard').classList.remove('show'); closeMask('formMask'); closeMask('dayMask'); showLogin(); }
+function logout(){ TOKEN=''; store('leave_token',''); store('leave_admin',''); if (ADMIN) { ADMIN=false; NAME=load('leave_name'); } closeMask('adminMask'); closeMask('askMask'); closeMask('typeMask'); closeMask('setMask'); REQS=[]; CONTACTS={}; $('reqCard').classList.remove('show'); closeMask('formMask'); closeMask('dayMask'); showLogin(); }
 
 /* 手機上 App 一直開著、隔天再切回來時：更新「今天」與最新假單，避免日期停在前一天 */
 let lastSync = Date.now();
@@ -1108,6 +1220,37 @@ function toggleRot(){
   t.style.display = open ? '' : 'none';
   $('rotToggle').textContent = open ? '排班表 ▴' : '排班表 ▾';
 }
+
+/* ---------- 設定：主題 ---------- */
+
+const THEMES = [
+  { id:'c', name:'深藍金', bar:'#0b1f36', card:'#12304f', body:'#fdfcf8', meta:'#0b1f36' },
+  { id:'d', name:'香檳金', bar:'#f8f3e8', card:'#efe2bf', body:'#fbf8f1', meta:'#f8f3e8' },
+  { id:'e', name:'霧藍灰', bar:'#f4f7fa', card:'#d8e3ee', body:'#f6f8fb', meta:'#f4f7fa' },
+];
+function curTheme(){ const c = document.documentElement.className.match(/theme-(d|e)/); return c ? c[1] : 'c'; }
+function setTheme(id){
+  document.documentElement.className = id==='c' ? '' : 'theme-' + id;
+  store('leave_theme', id==='c' ? '' : id);
+  const t = THEMES.find(x=>x.id===id);
+  document.querySelector('meta[name="theme-color"]').setAttribute('content', t.meta);
+  renderThemes();
+}
+function renderThemes(){
+  const cur = curTheme();
+  $('thOpts').innerHTML = THEMES.map(t=>`
+    <button class="th-opt ${t.id===cur?'cur':''}" onclick="setTheme('${t.id}')">
+      <span class="th-prev"><i style="height:14px;background:${t.bar};border-bottom:2px solid #c9a227"></i>
+        <i style="height:16px;margin:4px 5px;border-radius:4px;background:${t.card}"></i>
+        <i style="flex:1;background:${t.body}"></i></span>${t.name}${t.id===cur?' ✓':''}
+    </button>`).join('');
+}
+function openSettings(){
+  renderThemes();
+  $('setPinBox').style.display = ADMIN ? 'none' : '';
+  openMask('setMask');
+}
+(function(){ const t = THEMES.find(x=>x.id===curTheme()); document.querySelector('meta[name="theme-color"]').setAttribute('content', t.meta); })();
 
 /* ---------- 改假別 ---------- */
 
