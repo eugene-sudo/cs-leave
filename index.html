@@ -7,7 +7,7 @@
 <meta name="theme-color" content="#0b1f36">
 <script>
   /* 先套用記住的主題，避免打開時閃一下別的顏色 */
-  try { var t = localStorage.getItem('leave_theme'); if (['d','e','k','m4','m5'].indexOf(t) >= 0) document.documentElement.className = 'theme-' + t; } catch (e) {}
+  try { var t = localStorage.getItem('leave_theme'); if (['d','e','k','m4','m5','p1','p2','p3'].indexOf(t) >= 0) document.documentElement.className = 'theme-' + t; } catch (e) {}
 </script>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -557,6 +557,140 @@ html.theme-m5 .rot-row.me { background:rgba(255,255,255,.10) !important; }
 html.theme-m5 .rot-badge { background:linear-gradient(180deg,#f2f3f5,#c9ccd1) !important; color:#1b1d21 !important; }
 html.theme-m5 .rot-badge.soon { background:transparent !important; color:#f2f3f5 !important; border-color:#9aa0a8 !important; }
 html.theme-m5 header h1 { text-shadow:0 1px 0 rgba(0,0,0,.45) !important; } html.theme-m5 header h1 .gold { opacity:.85; }
+/* p1 */
+html.theme-p1 { --bg:#f0e6e8; --card:#fbf6f7; --text:#2a1418; --muted:#7a5f65; --line:#e8d8db; --accent:#3d0f1b; --soft:#fbf6f7; }
+html.theme-p1 body { background:linear-gradient(180deg,#f0e6e8,#e2d0d3) fixed; }
+html.theme-p1 header { border-bottom:1px solid #4a1522 !important; box-shadow:0 2px 8px rgba(0,0,0,.15), inset 0 1px 0 rgba(255,255,255,.8) !important;
+  background:linear-gradient(180deg,#8c3447 0%,#5e1a29 45%,#3a0f1a 55%,#6b2032 100%) !important; }
+html.theme-p1 header h1 { color:#f9eef0 !important; text-shadow:0 1px 0 rgba(255,255,255,.5); letter-spacing:.06em; }
+html.theme-p1 header h1 .gold { color:#f9eef0 !important; opacity:.75; }
+html.theme-p1 .me b { color:#f9eef0 !important; } html.theme-p1 .me .ghost { color:#f9eef0 !important; opacity:.7; }
+html.theme-p1 #meAvatar { box-shadow:0 0 0 2px #fff, 0 0 0 3px #4a1522 !important; }
+html.theme-p1 #rotCard { color:#f9eef0 !important; border:1px solid #4a1522 !important;
+  background:repeating-linear-gradient(90deg, rgba(255,255,255,.10) 0 1px, rgba(0,0,0,.03) 1px 3px),
+    linear-gradient(160deg,#8c3447 0%,#5e1a29 30%,#6b2032 50%,#3a0f1a 75%,#5e1a29 100%) !important;
+  box-shadow:0 6px 16px rgba(0,0,0,.16), inset 0 1px 0 rgba(255,255,255,.8), inset 0 -1px 0 rgba(0,0,0,.08) !important; }
+html.theme-p1 .rot-head { border-bottom-color:rgba(0,0,0,.18) !important; }
+html.theme-p1 .rot-head b { color:#f9eef0 !important; } html.theme-p1 .rot-head b small { color:#e6c4cb !important; } html.theme-p1 .rot-head .ghost { color:#f9eef0 !important; opacity:.8; }
+html.theme-p1 .rot-row { border-bottom-color:rgba(0,0,0,.08) !important; }
+html.theme-p1 .rot-row .what, html.theme-p1 .rot-row .next { color:#e6c4cb !important; } html.theme-p1 .rot-row .who, html.theme-p1 .rot-row .next b { color:#f9eef0 !important; }
+html.theme-p1 .rot-row.me { background:rgba(255,255,255,.12) !important; box-shadow:inset 3px 0 0 #fff !important; }
+html.theme-p1 .rot-badge { background:linear-gradient(180deg,#7a2536,#3d0f1b) !important; color:#fff !important; box-shadow:inset 0 1px 0 rgba(255,255,255,.25); }
+html.theme-p1 .rot-badge.soon { background:rgba(255,255,255,.5) !important; color:#3d0f1b !important; border-color:#4a1522 !important; }
+html.theme-p1 #rotCard .ini-sm { box-shadow:0 0 0 1.5px #fff !important; }
+html.theme-p1 .rot-tbl th { color:#f9eef0 !important; border-bottom-color:rgba(0,0,0,.2) !important; }
+html.theme-p1 .rot-tbl td { color:#f9eef0 !important; border-bottom-color:rgba(0,0,0,.08) !important; } html.theme-p1 .rot-tbl td.mine { font-weight:800; text-decoration:underline; }
+html.theme-p1 .card:not(#rotCard) { background:#fbf6f7 !important; border-color:#e8d8db !important; box-shadow:0 2px 6px rgba(0,0,0,.05), inset 0 1px 0 #fff !important; }
+html.theme-p1 .sheet { background:linear-gradient(180deg,#fbf6f7,#f6ecee) !important; }
+html.theme-p1 .nav { border-bottom-color:#e8d8db !important; }
+html.theme-p1 .nav button { background:linear-gradient(180deg,#fff,#efe0e3) !important; color:#3d0f1b !important; border:1px solid #e8d8db !important; box-shadow:inset 0 1px 0 #fff, 0 1px 2px rgba(0,0,0,.08); }
+html.theme-p1 .wd { color:#7a5f65 !important; }
+html.theme-p1 .day { background:linear-gradient(180deg,#f6ecee,#efe0e3) !important; } html.theme-p1 .day.weekend, html.theme-p1 .day.empty { background:transparent !important; }
+html.theme-p1 .day.full { background:linear-gradient(180deg,#efe0e3,#5e1a29) !important; }
+html.theme-p1 .day.today .num { background:linear-gradient(180deg,#7a2536,#2a1418) !important; color:#fff !important; box-shadow:0 0 0 2px #fff, 0 0 0 3px #4a1522; }
+html.theme-p1 .stripe { background:linear-gradient(180deg,#fff,#f6ecee) !important; box-shadow:inset 0 0 0 1px #e8d8db !important; }
+html.theme-p1 .mon-head { background:linear-gradient(180deg,#8c3447 0%,#5e1a29 50%,#6b2032 100%) !important; color:#f9eef0 !important; border:1px solid #4a1522; }
+html.theme-p1 .mon-head .muted { color:#f9eef0 !important; opacity:.8; }
+html.theme-p1 .datebox { background:linear-gradient(180deg,#fff,#f6ecee) !important; border-color:#e8d8db !important; }
+html.theme-p1 .tag { background:linear-gradient(180deg,#fff,#efe0e3) !important; color:#3d0f1b !important; border:1px solid #e8d8db; }
+html.theme-p1 button.primary { background:linear-gradient(180deg,#7a2536,#3d0f1b) !important; box-shadow:inset 0 1px 0 rgba(255,255,255,.2); }
+html.theme-p1 button.fab { border:1px solid #4a1522 !important; color:#f9eef0 !important;
+  background:linear-gradient(180deg,#8c3447 0%,#5e1a29 45%,#3a0f1a 55%,#6b2032 100%) !important;
+  box-shadow:0 6px 16px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.8) !important; }
+html.theme-p1 .pk { background:linear-gradient(180deg,#f6ecee,#efe0e3) !important; } html.theme-p1 .pk.sel { background:linear-gradient(180deg,#7a2536,#3d0f1b) !important; }
+
+html.theme-p1 .day.full { background:linear-gradient(180deg,#efe0e3,#e6cdd2) !important; }
+html.theme-p1 .rot-row.me { background:rgba(255,255,255,.10) !important; }
+html.theme-p1 .rot-badge { background:linear-gradient(180deg,#f9eef0,#e8c9cf) !important; color:#2a1418 !important; }
+html.theme-p1 .rot-badge.soon { background:transparent !important; color:#f9eef0 !important; border-color:#c28b97 !important; }
+html.theme-p1 header h1 { text-shadow:0 1px 0 rgba(0,0,0,.45) !important; } html.theme-p1 header h1 .gold { opacity:.85; }
+/* p2 */
+html.theme-p2 { --bg:#e8e8ea; --card:#f7f7f8; --text:#111113; --muted:#636368; --line:#dcdce0; --accent:#121214; --soft:#f7f7f8; }
+html.theme-p2 body { background:linear-gradient(180deg,#e8e8ea,#d0d0d4) fixed; }
+html.theme-p2 header { border-bottom:1px solid #1c1c1f !important; box-shadow:0 2px 8px rgba(0,0,0,.15), inset 0 1px 0 rgba(255,255,255,.8) !important;
+  background:linear-gradient(180deg,#48484d 0%,#2a2a2e 45%,#0c0c0e 55%,#333337 100%) !important; }
+html.theme-p2 header h1 { color:#f5f5f7 !important; text-shadow:0 1px 0 rgba(255,255,255,.5); letter-spacing:.06em; }
+html.theme-p2 header h1 .gold { color:#f5f5f7 !important; opacity:.75; }
+html.theme-p2 .me b { color:#f5f5f7 !important; } html.theme-p2 .me .ghost { color:#f5f5f7 !important; opacity:.7; }
+html.theme-p2 #meAvatar { box-shadow:0 0 0 2px #fff, 0 0 0 3px #1c1c1f !important; }
+html.theme-p2 #rotCard { color:#f5f5f7 !important; border:1px solid #1c1c1f !important;
+  background:repeating-linear-gradient(90deg, rgba(255,255,255,.10) 0 1px, rgba(0,0,0,.03) 1px 3px),
+    linear-gradient(160deg,#48484d 0%,#2a2a2e 30%,#333337 50%,#0c0c0e 75%,#2a2a2e 100%) !important;
+  box-shadow:0 6px 16px rgba(0,0,0,.16), inset 0 1px 0 rgba(255,255,255,.8), inset 0 -1px 0 rgba(0,0,0,.08) !important; }
+html.theme-p2 .rot-head { border-bottom-color:rgba(0,0,0,.18) !important; }
+html.theme-p2 .rot-head b { color:#f5f5f7 !important; } html.theme-p2 .rot-head b small { color:#b8b8be !important; } html.theme-p2 .rot-head .ghost { color:#f5f5f7 !important; opacity:.8; }
+html.theme-p2 .rot-row { border-bottom-color:rgba(0,0,0,.08) !important; }
+html.theme-p2 .rot-row .what, html.theme-p2 .rot-row .next { color:#b8b8be !important; } html.theme-p2 .rot-row .who, html.theme-p2 .rot-row .next b { color:#f5f5f7 !important; }
+html.theme-p2 .rot-row.me { background:rgba(255,255,255,.12) !important; box-shadow:inset 3px 0 0 #fff !important; }
+html.theme-p2 .rot-badge { background:linear-gradient(180deg,#3a3a3e,#121214) !important; color:#fff !important; box-shadow:inset 0 1px 0 rgba(255,255,255,.25); }
+html.theme-p2 .rot-badge.soon { background:rgba(255,255,255,.5) !important; color:#121214 !important; border-color:#1c1c1f !important; }
+html.theme-p2 #rotCard .ini-sm { box-shadow:0 0 0 1.5px #fff !important; }
+html.theme-p2 .rot-tbl th { color:#f5f5f7 !important; border-bottom-color:rgba(0,0,0,.2) !important; }
+html.theme-p2 .rot-tbl td { color:#f5f5f7 !important; border-bottom-color:rgba(0,0,0,.08) !important; } html.theme-p2 .rot-tbl td.mine { font-weight:800; text-decoration:underline; }
+html.theme-p2 .card:not(#rotCard) { background:#f7f7f8 !important; border-color:#dcdce0 !important; box-shadow:0 2px 6px rgba(0,0,0,.05), inset 0 1px 0 #fff !important; }
+html.theme-p2 .sheet { background:linear-gradient(180deg,#f7f7f8,#f0f0f2) !important; }
+html.theme-p2 .nav { border-bottom-color:#dcdce0 !important; }
+html.theme-p2 .nav button { background:linear-gradient(180deg,#fff,#e4e4e8) !important; color:#121214 !important; border:1px solid #dcdce0 !important; box-shadow:inset 0 1px 0 #fff, 0 1px 2px rgba(0,0,0,.08); }
+html.theme-p2 .wd { color:#636368 !important; }
+html.theme-p2 .day { background:linear-gradient(180deg,#f0f0f2,#e4e4e8) !important; } html.theme-p2 .day.weekend, html.theme-p2 .day.empty { background:transparent !important; }
+html.theme-p2 .day.full { background:linear-gradient(180deg,#e4e4e8,#2a2a2e) !important; }
+html.theme-p2 .day.today .num { background:linear-gradient(180deg,#3a3a3e,#111113) !important; color:#fff !important; box-shadow:0 0 0 2px #fff, 0 0 0 3px #1c1c1f; }
+html.theme-p2 .stripe { background:linear-gradient(180deg,#fff,#f0f0f2) !important; box-shadow:inset 0 0 0 1px #dcdce0 !important; }
+html.theme-p2 .mon-head { background:linear-gradient(180deg,#48484d 0%,#2a2a2e 50%,#333337 100%) !important; color:#f5f5f7 !important; border:1px solid #1c1c1f; }
+html.theme-p2 .mon-head .muted { color:#f5f5f7 !important; opacity:.8; }
+html.theme-p2 .datebox { background:linear-gradient(180deg,#fff,#f0f0f2) !important; border-color:#dcdce0 !important; }
+html.theme-p2 .tag { background:linear-gradient(180deg,#fff,#e4e4e8) !important; color:#121214 !important; border:1px solid #dcdce0; }
+html.theme-p2 button.primary { background:linear-gradient(180deg,#3a3a3e,#121214) !important; box-shadow:inset 0 1px 0 rgba(255,255,255,.2); }
+html.theme-p2 button.fab { border:1px solid #1c1c1f !important; color:#f5f5f7 !important;
+  background:linear-gradient(180deg,#48484d 0%,#2a2a2e 45%,#0c0c0e 55%,#333337 100%) !important;
+  box-shadow:0 6px 16px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.8) !important; }
+html.theme-p2 .pk { background:linear-gradient(180deg,#f0f0f2,#e4e4e8) !important; } html.theme-p2 .pk.sel { background:linear-gradient(180deg,#3a3a3e,#121214) !important; }
+
+html.theme-p2 .day.full { background:linear-gradient(180deg,#e4e4e8,#d2d2d6) !important; }
+html.theme-p2 .rot-row.me { background:rgba(255,255,255,.10) !important; }
+html.theme-p2 .rot-badge { background:linear-gradient(180deg,#f5f5f7,#cbcbd0) !important; color:#111113 !important; }
+html.theme-p2 .rot-badge.soon { background:transparent !important; color:#f5f5f7 !important; border-color:#8e8e94 !important; }
+html.theme-p2 header h1 { text-shadow:0 1px 0 rgba(0,0,0,.45) !important; } html.theme-p2 header h1 .gold { opacity:.85; }
+/* p3 冰川藍：乾淨的冰水藍，不用金屬漸層，跟鈦藍區分開 */
+html.theme-p3 { --bg:#eaf7fa; --card:#ffffff; --text:#0f3a46; --muted:#5b8590; --line:#d3eef5; --accent:#0e7c99; --soft:#f3fbfd; }
+html.theme-p3 body { background:linear-gradient(180deg,#eaf7fa,#d6f0f6) fixed; }
+html.theme-p3 header { border-bottom:1px solid #b5e3ee !important; box-shadow:0 2px 10px rgba(14,124,153,.10) !important;
+  background:linear-gradient(180deg,#f4fcfe,#d9f2f8) !important; }
+html.theme-p3 header h1 { color:#0e7c99 !important; text-shadow:none; letter-spacing:.06em; }
+html.theme-p3 header h1 .gold { color:#0f3a46 !important; opacity:1; }
+html.theme-p3 .me b { color:#0f3a46 !important; } html.theme-p3 .me .ghost { color:#0e7c99 !important; opacity:.85; }
+html.theme-p3 #meAvatar { box-shadow:0 0 0 2px #fff, 0 0 0 3px #8fd3e3 !important; }
+html.theme-p3 #rotCard { color:#0f3a46 !important; border:1px solid #b5e3ee !important;
+  background:linear-gradient(150deg,rgba(255,255,255,.95) 0%,#e3f6fa 55%,#c6ecf5 100%) !important;
+  box-shadow:0 8px 20px rgba(14,124,153,.14), inset 0 1px 0 #fff !important; }
+html.theme-p3 .rot-head { border-bottom-color:#cdebf2 !important; }
+html.theme-p3 .rot-head b { color:#0f3a46 !important; } html.theme-p3 .rot-head b small { color:#5b8590 !important; } html.theme-p3 .rot-head .ghost { color:#0e7c99 !important; }
+html.theme-p3 .rot-row { border-bottom-color:#dcf1f6 !important; }
+html.theme-p3 .rot-row .what, html.theme-p3 .rot-row .next { color:#5b8590 !important; } html.theme-p3 .rot-row .who, html.theme-p3 .rot-row .next b { color:#0f3a46 !important; }
+html.theme-p3 .rot-row.me { background:rgba(255,255,255,.75) !important; box-shadow:inset 3px 0 0 #0e7c99 !important; }
+html.theme-p3 .rot-badge { background:#0e7c99 !important; color:#fff !important; box-shadow:none; }
+html.theme-p3 .rot-badge.soon { background:#fff !important; color:#0e7c99 !important; border-color:#8fd3e3 !important; }
+html.theme-p3 #rotCard .ini-sm { box-shadow:0 0 0 1.5px #fff !important; }
+html.theme-p3 .rot-tbl th { color:#0f3a46 !important; border-bottom-color:#cdebf2 !important; }
+html.theme-p3 .rot-tbl td { color:#0f3a46 !important; border-bottom-color:#e3f4f8 !important; } html.theme-p3 .rot-tbl td.mine { font-weight:800; color:#0e7c99 !important; }
+html.theme-p3 .card:not(#rotCard) { background:#fff !important; border-color:#d3eef5 !important; box-shadow:0 4px 14px rgba(14,124,153,.07) !important; }
+html.theme-p3 .sheet { background:#fbfeff !important; }
+html.theme-p3 .nav { border-bottom-color:#d3eef5 !important; }
+html.theme-p3 .nav button { background:#effafc !important; color:#0e7c99 !important; border:1px solid #cdebf2 !important; box-shadow:none; }
+html.theme-p3 .wd { color:#5b8590 !important; }
+html.theme-p3 .day { background:#f0fafc !important; } html.theme-p3 .day.weekend, html.theme-p3 .day.empty { background:transparent !important; }
+html.theme-p3 .day.full { background:#d6f0f6 !important; }
+html.theme-p3 .day.today .num { background:#0e7c99 !important; color:#fff !important; box-shadow:0 0 0 2px #fff, 0 0 0 3px #8fd3e3; }
+html.theme-p3 .stripe { background:#fff !important; box-shadow:inset 0 0 0 1px #d3eef5 !important; }
+html.theme-p3 .mon-head { background:#e3f6fa !important; color:#0f3a46 !important; border:1px solid #b5e3ee; }
+html.theme-p3 .mon-head .muted { color:#0e7c99 !important; }
+html.theme-p3 .datebox { background:#f3fbfd !important; border-color:#d3eef5 !important; }
+html.theme-p3 .tag { background:#e3f6fa !important; color:#0e7c99 !important; border:1px solid #cdebf2; }
+html.theme-p3 button.primary { background:#0e7c99 !important; box-shadow:none; }
+html.theme-p3 button.fab { border:none !important; color:#fff !important;
+  background:linear-gradient(180deg,#19a0be,#0e7c99) !important;
+  box-shadow:0 8px 20px rgba(14,124,153,.35) !important; }
+html.theme-p3 .pk { background:#f0fafc !important; } html.theme-p3 .pk.sel { background:#0e7c99 !important; }
 
 </style>
 </head>
@@ -800,16 +934,22 @@ function typeStyle(type, c){
 }
 
 /** 呼叫 Apps Script API。用 text/plain 送出，瀏覽器不會先發 CORS 預檢請求 */
+// 只讀資料的功能：連不上時自動重試一次（寫入類的不重試，避免重複送出）
+const READ_ONLY = ['getInitData','getAll','getLeaves','getRequests','adminPinStatus'];
 async function call(fn,...args){
   let res;
+  const send = ()=>fetch(API_URL, {
+    method:'POST',
+    headers:{ 'Content-Type':'text/plain;charset=utf-8' },
+    body: JSON.stringify({ fn, args }),
+  });
   try {
-    res = await fetch(API_URL, {
-      method:'POST',
-      headers:{ 'Content-Type':'text/plain;charset=utf-8' },
-      body: JSON.stringify({ fn, args }),
-    });
+    res = await send();
   } catch(e) {
-    throw new Error('連不上伺服器，請檢查網路後再試一次');
+    if (READ_ONLY.indexOf(fn) < 0) throw new Error('連不上伺服器，請檢查網路後再試一次');
+    await new Promise(r=>setTimeout(r, 1500));
+    try { res = await send(); }
+    catch(e2) { throw new Error('連不上伺服器，請檢查網路後再試一次'); }
   }
   let j;
   try { j = await res.json(); }
@@ -907,20 +1047,35 @@ document.addEventListener('visibilitychange', ()=>{
 
 /* 重新整理：一趟網路拿齊本月、近期、申請（後端還沒更新時，自動退回分三次拿） */
 let NO_GETALL = false;
+let REFRESHING = null;   // 正在更新中就共用同一個請求，不重複送
+let AGAIN = false;       // 更新途中資料又被改過（例如剛取消假）→ 這次結束後再更新一次，避免顯示舊資料
 function refresh(){
+  if (REFRESHING) return REFRESHING;
+  REFRESHING = Promise.resolve(doRefresh()).finally(()=>{
+    REFRESHING = null;
+    if (AGAIN) { AGAIN = false; refresh(); }
+  });
+  return REFRESHING;
+}
+function doRefresh(){
   if (NO_GETALL || !TOKEN) { loadMonth(); loadUpcoming(); loadRequests(); return new Promise(r=>setTimeout(r,1200)); }
-  const y=cur.y, m=cur.m;
+  const y=cur.y, m=cur.m, gen=GEN;
   $('monthTitle').textContent = `${y} 年 ${m} 月`;
   if (monthCache[mkey(y,m)]) { monthLeaves = monthCache[mkey(y,m)]; renderCal(); }
-  return api('getAll', ymd(y,m,1), ymd(y,m,daysIn(y,m)), INIT.today, addDays(INIT.today,90)).then(r=>{
-    monthCache[mkey(y,m)] = r.month;
-    if (y===cur.y && m===cur.m) { monthLeaves = r.month; renderCal(); }
+  // 一次抓「上個月～下個月」，左右滑的時候不用再等
+  const [py,pm] = addMonth(y,m,-1), [ny,nm] = addMonth(y,m,1);
+  return api('getAll', ymd(py,pm,1), ymd(ny,nm,daysIn(ny,nm)), INIT.today, addDays(INIT.today,90)).then(r=>{
+    if (gen !== GEN) { AGAIN = true; return; }        // 途中資料被改過，這份可能是舊的，等下再抓一次
+    [[py,pm],[y,m],[ny,nm]].forEach(([yy,mm])=>{
+      const a=ymd(yy,mm,1), b=ymd(yy,mm,daysIn(yy,mm));
+      putMonth(mkey(yy,mm), r.month.filter(l=>l.date>=a && l.date<=b));
+    });
+    if (y===cur.y && m===cur.m) { monthLeaves = monthCache[mkey(y,m)]; renderCal(); }
     CONTACTS = r.contacts || {};
     upcoming = r.upcoming; renderUpcoming();
     REQS = r.requests || []; renderRequests();
-    prefetchAround(y,m);
   }).catch(e=>{
-    if (String(e.message).indexOf('未知的功能')>=0) { NO_GETALL = true; return refresh(); }
+    if (String(e.message).indexOf('未知的功能')>=0) { NO_GETALL = true; return doRefresh(); }
     toast(e.message);
   });
 }
@@ -956,7 +1111,9 @@ function refresh(){
     ind.style.transition = 'height .2s';
     if (pull < TRIGGER) { set(0,''); pull = 0; return; }
     busy = true; set(48, '更新中…', true);
-    Promise.resolve(refresh()).finally(()=>{ busy = false; pull = 0; set(0,''); });
+    const slow = new Promise(r=>setTimeout(()=>r('slow'), 12000));
+    Promise.race([refresh(), slow]).then(x=>{ if (x==='slow') toast('網路較慢，資料仍在背景更新'); })
+      .finally(()=>{ busy = false; pull = 0; set(0,''); });
   }, { passive:true });
 })();
 
@@ -1041,9 +1198,9 @@ function ymGo(y, m){
 function loadMonth(){
   $('monthTitle').textContent = `${cur.y} 年 ${cur.m} 月`;
   const y=cur.y, m=cur.m, cached = monthCache[mkey(y,m)];
-  if (cached) {                                   // 已經抓過：馬上顯示，背景再更新一次
+  if (cached) {                                   // 已經抓過：馬上顯示；資料超過 1 分鐘才在背景更新
     monthLeaves = cached; renderCal();
-    fetchMonth(y,m,true).then(r=>{ if (y===cur.y && m===cur.m) { monthLeaves=r; renderCal(); } }).catch(()=>{});
+    if (!isFresh(mkey(y,m))) fetchMonth(y,m,true).then(r=>{ if (y===cur.y && m===cur.m) { monthLeaves=r; renderCal(); } }).catch(()=>{});
     prefetchAround(y,m);
     return;
   }
@@ -1057,14 +1214,19 @@ function loadMonth(){
 
 /* 各月份假單快取（主月曆、請假月曆、當天詳情共用） */
 const monthCache = {};
+const monthAt = {};   // 每個月份資料抓回來的時間
+let GEN = 0;          // 資料被改過（請假、取消…）就 +1，改之前送出的請求回來就不採用
 function mkey(y,m){ return y+'-'+pad(m); }
+function putMonth(k, list){ monthCache[k] = list; monthAt[k] = Date.now(); }
+function isFresh(k){ return Date.now() - (monthAt[k]||0) < 60*1000; }
 const pending = {};   // 正在抓的月份，避免同一個月重複送出請求
 function fetchMonth(y,m,force){
   const k = mkey(y,m);
   if (!force && monthCache[k]) return Promise.resolve(monthCache[k]);
-  if (!force && pending[k]) return pending[k];
+  if (pending[k]) return pending[k];              // 同一個月已經在抓了，就等那一個
+  const gen = GEN;
   const p = api('getLeaves', ymd(y,m,1), ymd(y,m,daysIn(y,m)))
-    .then(r=>{ monthCache[k]=r; return r; })
+    .then(r=>{ if (gen===GEN) putMonth(k, r); return r; })
     .finally(()=>{ if (pending[k]===p) delete pending[k]; });
   pending[k] = p;
   return p;
@@ -1184,7 +1346,13 @@ function cancelDayRow(i, btn){
   api('cancelLeave', r.ids).then(()=>{ toast('已取消'); closeMask('dayMask'); invalidate(); refresh(); })
     .catch(e=>{ busyBtn(btn, false); toast(e.message); });
 }
-function invalidate(){ Object.keys(monthCache).forEach(k=>delete monthCache[k]); }
+/** 資料改過之後：舊資料先留著顯示（不用等），但全部標成過期，之後看到時會在背景重抓 */
+function invalidate(){
+  GEN++;
+  Object.keys(monthAt).forEach(k=>{ monthAt[k] = 0; });
+  Object.keys(pending).forEach(k=>delete pending[k]);
+  if (REFRESHING) AGAIN = true;
+}
 
 /* ---------- 近期清單：連續上班日合併成一段 ---------- */
 
@@ -1295,7 +1463,10 @@ function pkLoad(){
   $('pkTitle').textContent = `${PK.y} 年 ${PK.m} 月`;
   const y=PK.y, m=PK.m;
   pkRender();
-  if (monthCache[mkey(y,m)]) { prefetchAround(y,m); return; }   // 已經有資料：直接可以選
+  if (monthCache[mkey(y,m)]) {                                   // 已經有資料：直接可以選
+    if (!isFresh(mkey(y,m))) fetchMonth(y,m,true).then(()=>{ if (y===PK.y && m===PK.m) pkRender(); }).catch(()=>{});
+    prefetchAround(y,m); return;
+  }
   setBusy('pk', true);                                           // 沒有資料：鎖住，等載入完才能點、才能再切換
   fetchMonth(y,m)
     .then(()=>{ if (y===PK.y && m===PK.m) pkRender(); prefetchAround(y,m); })
@@ -1427,8 +1598,11 @@ const THEMES = [
   { id:'k',  name:'銀漸層', bar:'linear-gradient(180deg,#fdfdfe,#c9ced5,#e9ebee)', card:'linear-gradient(160deg,#f6f7f9,#cfd4db,#eef0f3,#b9bfc8)', body:'#f7f8fa', meta:'#e3e6ea' },
   { id:'m4', name:'鈦藍',   bar:'linear-gradient(180deg,#f4f8ff,#c9d7ea,#7f9bc0,#dfe8f5)', card:'linear-gradient(160deg,#f4f8ff,#c9d7ea,#dfe8f5,#7f9bc0)', body:'#f7f9fc', meta:'#c9d7ea' },
   { id:'m5', name:'槍灰',   bar:'linear-gradient(180deg,#7a7f88,#50555d,#2e3137,#5c616a)', card:'linear-gradient(160deg,#7a7f88,#50555d,#5c616a,#2e3137)', body:'#f6f7f8', meta:'#3a3e45' },
+  { id:'p1', name:'酒紅',   bar:'linear-gradient(180deg,#8c3447,#5e1a29,#3a0f1a,#6b2032)', card:'linear-gradient(160deg,#8c3447,#5e1a29,#6b2032,#3a0f1a)', body:'#fbf6f7', meta:'#4a1522' },
+  { id:'p2', name:'深邃黑',   bar:'linear-gradient(180deg,#48484d,#2a2a2e,#0c0c0e,#333337)', card:'linear-gradient(160deg,#48484d,#2a2a2e,#333337,#0c0c0e)', body:'#f7f7f8', meta:'#1c1c1f' },
+  { id:'p3', name:'冰川藍', bar:'linear-gradient(180deg,#f4fcfe,#d9f2f8)', card:'linear-gradient(150deg,#fff,#e3f6fa,#c6ecf5)', body:'#eaf7fa', meta:'#e3f6fa' },
 ];
-function curTheme(){ const c = document.documentElement.className.match(/theme-(d|e|k|m4|m5)\b/); return c ? c[1] : 'c'; }
+function curTheme(){ const c = document.documentElement.className.match(/theme-(d|e|k|m4|m5|p1|p2|p3)\b/); return c ? c[1] : 'c'; }
 function setTheme(id){
   document.documentElement.className = id==='c' ? '' : 'theme-' + id;
   store('leave_theme', id==='c' ? '' : id);
