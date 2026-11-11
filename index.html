@@ -71,6 +71,9 @@
   .seg { flex:1; min-width:0; border-radius:5px; display:flex; align-items:center; justify-content:center;
          font-size:11px; font-weight:800; color:#fff; border:1.5px solid transparent; line-height:1; overflow:hidden; }
   .seg.alt { background:#fff !important; }   /* 代理OP：空心框 */
+  /* 鉛筆假：像鉛筆畫的斜線，表示暫定、可以塗改 */
+  .seg.pencil, .ini-lg.pencil { background:repeating-linear-gradient(135deg, var(--c) 0 2px, #fff 2px 5px) !important;
+                                border:1.5px dashed var(--c); color:var(--c); text-shadow:0 0 3px #fff, 0 0 3px #fff, 0 0 2px #fff; }
 
   /* 當天詳情 */
   .dt-row { display:flex; align-items:center; gap:10px; padding:10px 0; border-bottom:1px solid var(--line); }
@@ -130,6 +133,24 @@
   .item .when { margin-top:2px; }
   .tag { font-size:11px; padding:1px 6px; border-radius:999px; background:#eef2ff; color:var(--accent); font-weight:500; }
   .tag.alt { background:#ecfdf5; color:#047857; }
+  .tag.pencil { background:#fff; color:#6b7280; border:1px dashed #9ca3af; }
+  .sw.pencil { background:repeating-linear-gradient(135deg, var(--muted) 0 2px, #fff 2px 4px); border-style:dashed; }
+
+  /* 鉛筆假申請通知 */
+  #reqCard { display:none; }
+  #reqCard.show { display:block; }
+  .rq { padding:10px 0; border-bottom:1px solid var(--line); }
+  .rq:last-child { border-bottom:0; }
+  .rq .rq-txt { font-size:14px; line-height:1.5; }
+  .rq .rq-reason { font-size:13px; color:var(--muted); margin-top:2px; }
+  .rq .rq-btns { display:flex; gap:8px; margin-top:8px; }
+  .rq .rq-btns button { flex:1; padding:9px; font-weight:600; }
+  .rq-sec { font-size:12px; font-weight:700; color:var(--muted); margin-top:8px; }
+  .rq-sec:first-of-type { margin-top:0; }
+  .rq.done { display:flex; align-items:center; gap:8px; }
+  .rq.done .rq-txt { flex:1; }
+  .x { background:transparent; color:var(--muted); padding:4px 8px; font-size:16px; }
+  button.ok { background:#16a34a; color:#fff; }
 
   .fab { position:fixed; right:16px; bottom:calc(20px + env(safe-area-inset-bottom)); z-index:6;
          border-radius:28px; padding:14px 22px; font-size:16px; font-weight:700;
@@ -195,12 +216,17 @@
     <h1>CS 假單</h1>
     <div class="me">
       <span class="avatar" id="meAvatar"></span><b id="meName"></b>
-      <button class="ghost" onclick="openPin()">改PIN</button>
+      <button class="ghost" id="btnPin" onclick="openPin()">改PIN</button>
+      <button class="ghost" id="btnAdmin" style="display:none;color:var(--text);font-weight:700" onclick="openAdmin()">管理</button>
       <button class="ghost" onclick="logout()">登出</button>
     </div>
   </header>
 
   <main>
+    <div class="card" id="reqCard">
+      <b>鉛筆假申請</b>
+      <div id="reqBody"></div>
+    </div>
     <div class="card">
       <div class="nav">
         <span class="title"><span id="monthTitle"></span><span class="mini-spin" id="calSpin"></span></span>
@@ -236,7 +262,9 @@
 <div class="mask" id="formMask" onclick="if(event.target===this)closeMask('formMask')">
   <div class="sheet">
     <b style="font-size:17px">申請請假</b>
-    <div class="muted" style="margin-top:4px">請假人：<b id="formName"></b>　點日期可以複選</div>
+    <div class="muted" style="margin-top:4px" id="formWhoLine">請假人：<b id="formName"></b>　點日期可以複選</div>
+    <div id="formWhoPick" style="display:none"><label>請假人（管理員代填）</label><select id="fWho"></select>
+      <div class="muted" style="margin-top:4px">管理員可以補登過去的日期</div></div>
     <div class="pk-nav">
       <span class="title"><span id="pkTitle"></span><span class="mini-spin" id="pkSpin"></span></span>
       <button onclick="pkShift(-1)">‹</button>
@@ -254,6 +282,35 @@
       <button onclick="closeMask('formMask')">取消</button>
       <button class="primary" id="fSubmit" onclick="submitForm()">送出</button>
     </div>
+  </div>
+</div>
+
+<!-- 申請別人的鉛筆假 -->
+<div class="mask" id="askMask" onclick="if(event.target===this)closeMask('askMask')">
+  <div class="sheet">
+    <b style="font-size:17px">請她讓給我</b>
+    <div class="muted" style="margin-top:4px" id="askInfo"></div>
+    <div class="two">
+      <div><label>時段</label><select id="askSlot"></select></div>
+      <div><label>改成</label><select id="askType"></select></div>
+    </div>
+    <label>事由（必填，對方會看到）</label><textarea id="askReason" rows="2" maxlength="200" placeholder="例如：家裡臨時有事"></textarea>
+    <div class="muted" style="margin-top:6px">送出後要等對方按「同意」才會生效</div>
+    <div class="err" id="askErr"></div>
+    <div class="actions">
+      <button onclick="closeMask('askMask')">取消</button>
+      <button class="primary" id="askSubmit" onclick="submitAsk()">送出申請</button>
+    </div>
+  </div>
+</div>
+
+<!-- 管理員 -->
+<div class="mask" id="adminMask" onclick="if(event.target===this)closeMask('adminMask')">
+  <div class="sheet">
+    <b style="font-size:17px">管理員</b>
+    <div class="muted" style="margin-top:4px">重設後 PIN 會變回 0000，對方下次登入時要重新設定</div>
+    <div id="adminBody" class="loading">載入中…</div>
+    <div class="actions"><button onclick="closeMask('adminMask')">關閉</button></div>
   </div>
 </div>
 
@@ -281,6 +338,7 @@ const API_URL = 'https://script.google.com/macros/s/AKfycbznum_5tyCbBKmoigxujp26
 /* ============================================================================= */
 
 let FORCE = false, FORCE_OLD = '';
+let ADMIN = false;   // 管理員模式（登入時輸入管理員 PIN）
 let INIT = null, TOKEN = '', NAME = '', cur = { y:0, m:0 }, monthLeaves = [], upcoming = [], colorOf = {};
 const initialOf = {};
 const WD = '日一二三四五六';
@@ -308,7 +366,16 @@ function isOff(ds){
   return INIT.skipWeekends && (w===0||w===6);
 }
 function nextWorkday(ds){ let d=addDays(ds,1), i=0; while(isOff(d) && i++<30) d=addDays(d,1); return d; }
-function isAlt(type){ return INIT.types.indexOf(type) > 0; }   // 第二種以後的假別（代理OP）用空心標籤
+const PENCIL = '鉛筆假';
+function isPencil(type){ return type===PENCIL; }
+function isAlt(type){ return !isPencil(type) && INIT.types.indexOf(type) > 0; }   // 代理OP：空心
+/** 假別樣式：休假實心、代理OP 空心、鉛筆假斜線 */
+function typeCls(type){ return isPencil(type) ? 'pencil' : isAlt(type) ? 'alt' : ''; }
+function typeStyle(type, c){
+  if (isPencil(type)) return `--c:${c}`;
+  if (isAlt(type)) return `border-color:${c};color:${c}`;
+  return `background:${c}`;
+}
 
 /** 呼叫 Apps Script API。用 text/plain 送出，瀏覽器不會先發 CORS 預檢請求 */
 async function call(fn,...args){
@@ -331,7 +398,7 @@ async function call(fn,...args){
 function api(fn,...args){
   return call(fn, TOKEN, ...args).catch(e=>{
     const m = String(e.message||e);
-    if (m.indexOf('MUSTCHANGE')>=0){ openPin(true, ''); e = new Error('請先設定新的 PIN'); }
+    if (m.indexOf('MUSTCHANGE')>=0 && !ADMIN){ openPin(true, ''); e = new Error('請先設定新的 PIN'); }
     else if (m.indexOf('AUTH')>=0){ logout(); toast('登入已失效，請重新登入'); }
     throw e;
   });
@@ -351,14 +418,16 @@ call('getInitData').then(d=>{
   });
   $('loginName').innerHTML = '<option value="">（選擇）</option>' + d.staff.map(s=>`<option>${esc(s.name)}</option>`).join('');
   $('fType').innerHTML = d.types.map(t=>`<option>${esc(t)}</option>`).join('');
+  $('fWho').innerHTML = d.staff.map(s=>`<option>${esc(s.name)}</option>`).join('');
   $('legend').innerHTML =
     d.staff.map(s=>`<span><span class="ini" style="background:${s.color}">${esc(initialOf[s.name])}</span>${esc(s.name)}</span>`).join('') +
     '<span class="sep"></span>' +
-    d.types.map((t,i)=>`<span><span class="sw" style="${i?'':'background:var(--muted)'}"></span>${esc(t)}</span>`).join('') +
+    d.types.map((t,i)=>`<span><span class="sw ${t===PENCIL?'pencil':''}" style="${i?'':'background:var(--muted)'}"></span>${esc(t)}</span>`).join('') +
     `<span>・每個時段限 ${d.slotLimit} 人（休假、代理OP 合併計算）</span>`;
   const t = parts(d.today); cur = { y:t[0], m:t[1] };
 
-  TOKEN = load('leave_token'); NAME = load('leave_name');
+  TOKEN = load('leave_token'); NAME = load('leave_name'); ADMIN = load('leave_admin')==='1';
+  if (ADMIN) NAME = '管理員';
   $('bootView').style.display='none';
   TOKEN && NAME ? showApp() : showLogin();
 }).catch(e=>{
@@ -373,8 +442,10 @@ function showLogin(){
 function showApp(){
   $('loginView').style.display='none'; $('appView').style.display='block';
   $('meName').textContent = NAME;
-  $('meAvatar').textContent = NAME.charAt(0).toUpperCase();
-  $('meAvatar').style.background = colorOf[NAME] || '#6b7280';
+  $('meAvatar').textContent = ADMIN ? '管' : NAME.charAt(0).toUpperCase();
+  $('meAvatar').style.background = ADMIN ? '#111827' : (colorOf[NAME] || '#6b7280');
+  $('btnPin').style.display = ADMIN ? 'none' : '';
+  $('btnAdmin').style.display = ADMIN ? '' : 'none';
   refresh();
 }
 $('pinIn').addEventListener('keydown', e=>{ if(e.key==='Enter') doLogin(); });
@@ -386,11 +457,13 @@ function doLogin(){
   const btn=$('loginBtn'); btn.disabled=true; btn.textContent='驗證中…';
   call('login', name, pin).then(r=>{
     if(!r.ok) return showErr('loginErr', r.msg);
-    TOKEN=r.token; NAME=r.name; store('leave_token',TOKEN); store('leave_name',NAME);
+    TOKEN=r.token; ADMIN=!!r.admin; store('leave_token',TOKEN); store('leave_admin', ADMIN?'1':'');
+    if (ADMIN) { NAME='管理員'; return showApp(); }       // 不記住「管理員」當預設姓名，登入畫面不會露出痕跡
+    NAME=r.name; store('leave_name',NAME);
     if (r.mustChange) openPin(true, pin); else showApp();
   }).catch(e=>showErr('loginErr',e.message)).finally(()=>{ btn.disabled=false; btn.textContent='登入'; });
 }
-function logout(){ TOKEN=''; store('leave_token',''); closeMask('formMask'); closeMask('dayMask'); showLogin(); }
+function logout(){ TOKEN=''; store('leave_token',''); store('leave_admin',''); if (ADMIN) { ADMIN=false; NAME=load('leave_name'); } closeMask('adminMask'); closeMask('askMask'); REQS=[]; $('reqCard').classList.remove('show'); closeMask('formMask'); closeMask('dayMask'); showLogin(); }
 
 /* 手機上 App 一直開著、隔天再切回來時：更新「今天」與最新假單，避免日期停在前一天 */
 let lastSync = Date.now();
@@ -408,7 +481,7 @@ document.addEventListener('visibilitychange', ()=>{
 
 /* ---------- 月曆 ---------- */
 
-function refresh(){ loadMonth(); loadUpcoming(); }
+function refresh(){ loadMonth(); loadUpcoming(); loadRequests(); }
 /* 載入中鎖定：資料還沒回來前，不能再滑動或按箭頭切換月份 */
 const BUSY = { main:false, pk:false };
 function setBusy(which, on){
@@ -488,9 +561,14 @@ function leavesOn(ds){
 function slotsOf(slot){ return slot==='上午' ? ['上午'] : slot==='下午' ? ['下午'] : ['上午','下午']; }
 function covers(list, s){ return list.filter(l=>slotsOf(l.slot).indexOf(s)>=0); }
 /** 我這天還能請的時段：有名額、而且我自己還沒登記 */
-function availSlots(list){
-  return ['上午','下午'].filter(s => covers(list,s).length < INIT.slotLimit && !covers(list,s).some(l=>l.name===NAME));
+/** 這次是幫誰請假：一般人是自己；管理員是表單上選的人 */
+function who(){ return ADMIN ? $('fWho').value : NAME; }
+function availSlots(list, person){
+  person = person || who();
+  return ['上午','下午'].filter(s => covers(list,s).length < INIT.slotLimit && !covers(list,s).some(l=>l.name===person));
 }
+/** 這天還有沒有任何空位（不管是誰） */
+function anyFree(list){ return ['上午','下午'].filter(s => covers(list,s).length < INIT.slotLimit); }
 
 /* ---------- 主月曆（只看，不選） ---------- */
 
@@ -518,9 +596,8 @@ function renderCal(){
 /** 平常一整格；有人只請半天時才分上（上午）下（下午）兩格 */
 function renderSlots(list){
   const seg = l => {
-    const c = colorOf[l.name]||'#666', alt = isAlt(l.type);
-    const style = alt ? `border-color:${c};color:${c}` : `background:${c}`;
-    return `<span class="seg ${alt?'alt':''}" style="${style}">${esc(initialOf[l.name]||l.name.charAt(0))}</span>`;
+    const c = colorOf[l.name]||'#666';
+    return `<span class="seg ${typeCls(l.type)}" style="${typeStyle(l.type,c)}">${esc(initialOf[l.name]||l.name.charAt(0))}</span>`;
   };
   const am = covers(list,'上午'), pm = covers(list,'下午');
   if (!am.length && !pm.length) return '<div class="slots"><div class="stripe"></div></div>';
@@ -544,7 +621,8 @@ function openDay(ds){
     if (used.has(l)) return;
     const pair = l.slot!=='全天' ? list.find(x=>x!==l && !used.has(x) && x.name===l.name && x.type===l.type && x.slot!=='全天' && x.slot!==l.slot) : null;
     used.add(l); if (pair) used.add(pair);
-    rows.push({ name:l.name, type:l.type, slot: pair ? '全天' : l.slot, reason: l.reason || (pair && pair.reason) || '', ids: pair ? [l.id, pair.id] : [l.id] });
+    const parts = pair ? [{id:l.id, slot:l.slot}, {id:pair.id, slot:pair.slot}] : [{id:l.id, slot:l.slot}];
+    rows.push({ name:l.name, type:l.type, slot: pair ? '全天' : l.slot, reason: l.reason || (pair && pair.reason) || '', ids: parts.map(x=>x.id), parts });
   });
   const order = { '全天':0, '上午':1, '下午':2 };
   rows.sort((a,b)=>order[a.slot]-order[b.slot]);
@@ -552,21 +630,28 @@ function openDay(ds){
   let body = h ? `<div class="hol-banner">${esc(h.type==='補班' ? '補班日' : h.name)}</div>` : '';
   if (!rows.length) body += `<div class="dt-empty">${isOff(ds) ? '' : '這天沒有人請假'}</div>`;
   body += rows.map((r,i)=>{
-    const c = colorOf[r.name]||'#666', alt = isAlt(r.type);
-    const canCancel = r.name===NAME && ds>=INIT.today;
+    const c = colorOf[r.name]||'#666';
+    const canCancel = ADMIN || (r.name===NAME && ds>=INIT.today);
+    // 別人的鉛筆假：可以申請讓給我（已經申請過就顯示等待中）
+    let askBtn = '';
+    if (isPencil(r.type) && !ADMIN && r.name!==NAME && ds>=INIT.today) {
+      const waiting = REQS.some(q=>q.status==='待回覆' && q.from===NAME && q.owner===r.name && q.date===ds);
+      askBtn = waiting ? `<span class="muted" style="flex-shrink:0">已申請・等回覆</span>`
+                       : `<button class="primary" style="flex-shrink:0;padding:6px 10px;font-size:13px" onclick="openAsk(${i})">請她讓給我</button>`;
+    }
     return `<div class="dt-row">
-      <span class="ini-lg ${alt?'alt':''}" style="${alt?`border-color:${c};color:${c}`:`background:${c}`}">${esc(initialOf[r.name]||r.name.charAt(0))}</span>
+      <span class="ini-lg ${typeCls(r.type)}" style="${typeStyle(r.type,c)}">${esc(initialOf[r.name]||r.name.charAt(0))}</span>
       <div class="info">
-        <div class="who" style="display:flex;gap:6px;align-items:center;font-weight:600">${esc(r.name)}<span class="tag ${alt?'alt':''}">${esc(r.type)}</span></div>
+        <div class="who" style="display:flex;gap:6px;align-items:center;font-weight:600">${esc(r.name)}<span class="tag ${typeCls(r.type)}">${esc(r.type)}</span></div>
         <div class="muted">${esc(r.slot)}${r.reason?'・'+esc(r.reason):''}</div>
       </div>
-      ${canCancel?`<button class="danger" onclick="cancelDayRow(${i})">取消</button>`:''}
+      ${canCancel?`<button class="danger" onclick="cancelDayRow(${i})">取消</button>`:askBtn}
     </div>`;
   }).join('');
   $('dBody').innerHTML = body;
   openDay._rows = rows;
 
-  const free = (ds>=INIT.today && !isOff(ds)) ? availSlots(list) : [];
+  const free = isOff(ds) ? [] : ADMIN ? anyFree(list) : (ds>=INIT.today ? availSlots(list, NAME) : []);
   $('dActions').innerHTML = `<button onclick="closeMask('dayMask')">關閉</button>` +
     (free.length ? `<button class="primary" onclick="closeMask('dayMask');openForm('${ds}')">請這天${free.length===1?'（'+free[0]+'）':''}</button>` : '');
   openMask('dayMask');
@@ -631,11 +716,11 @@ function renderUpcoming(){
     <div class="item">
       <div class="datebox"><div class="bar" style="background:${c}"></div><div class="dd">${gd}</div><div class="dw">週${WD[wdIdx(g.start)]}</div></div>
       <div class="info">
-        <div class="who">${esc(g.name)}<span class="tag ${isAlt(g.type)?'alt':''}">${esc(g.type)}</span></div>
+        <div class="who">${esc(g.name)}<span class="tag ${typeCls(g.type)}">${esc(g.type)}</span></div>
         <div class="when muted">${esc(when)}</div>
         ${g.reason?`<div class="muted" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(g.reason)}</div>`:''}
       </div>
-      ${g.name===NAME?`<button class="danger" onclick="cancelGroup(${i})">取消</button>`:''}
+      ${(ADMIN || g.name===NAME)?`<button class="danger" onclick="cancelGroup(${i})">取消</button>`:''}
     </div>`;
   });
   box.innerHTML = html;
@@ -658,6 +743,15 @@ function openForm(ds){
   const base = ds ? parts(ds) : [cur.y, cur.m];
   PK.y = base[0]; PK.m = base[1];
   $('formName').textContent = NAME;
+  $('formWhoLine').style.display = ADMIN ? 'none' : '';
+  $('formWhoPick').style.display = ADMIN ? '' : 'none';
+  if (ADMIN && ds) {                                 // 從某天點進來：預選那天還能請的第一個人
+    const list = leavesOn(ds);
+    const names = INIT.staff.map(s=>s.name);
+    const ok = names.find(n=>!list.some(l=>l.name===n) && availSlots(list, n).length)   // 優先選這天完全沒登記的人
+            || names.find(n=>availSlots(list, n).length);
+    if (ok) $('fWho').value = ok;
+  }
   $('fType').value = INIT.types[0];
   $('fSlot').value = '全天'; PK.slotTouched = false;
   $('fReason').value=''; showErr('fErr','');
@@ -691,7 +785,7 @@ function pkRender(){
   for (let d=1; d<=daysIn(PK.y,PK.m); d++){
     const ds = ymd(PK.y,PK.m,d), h = holiday(ds), cls = ['pk'];
     let sub = '';
-    if (ds < INIT.today) cls.push('off');
+    if (ds < INIT.today && !ADMIN) cls.push('off');
     else if (h && h.type==='放假') cls.push('hol');
     else if (isOff(ds)) cls.push('off');
     else {
@@ -710,11 +804,15 @@ function pkRender(){
 function pkTap(ds){
   if (PK.sel.has(ds)) { PK.sel.delete(ds); return pkRender(); }
   const h = holiday(ds);
-  if (ds < INIT.today) return;
+  if (ds < INIT.today && !ADMIN) return;
   if (h && h.type==='放假') return toast(`${shortDate(ds)} ${h.name}`);
   if (isOff(ds)) return;
   const list = leavesOn(ds), free = availSlots(list);
-  if (!free.length) return toast(`${shortDate(ds)} 已滿：` + list.map(l=>`${l.name}（${l.slot}${l.type}）`).join('、'));
+  if (!free.length) {
+    const hasPencil = list.some(l=>isPencil(l.type) && l.name!==who());
+    return toast(`${shortDate(ds)} 已滿：` + list.map(l=>`${l.name}（${l.slot}${l.type}）`).join('、') +
+                 (hasPencil && !ADMIN ? '。鉛筆假可以在月曆點這天，請她讓給你' : ''));
+  }
   PK.sel.add(ds);
   pkRender();
 }
@@ -737,12 +835,124 @@ function submitForm(){
   showErr('fErr','');
   if (!dates.length) return showErr('fErr','請先在月曆上點選日期');
   const p = { type:$('fType').value, slot:$('fSlot').value, reason:$('fReason').value.trim(), dates };
+  if (ADMIN) p.forName = $('fWho').value;
   const btn=$('fSubmit'); btn.disabled=true; btn.textContent='送出中…';
   api('submitLeave', p).then(r=>{
     invalidate();
     if(!r.ok){ showErr('fErr','無法送出：\n'+r.conflicts.join('\n')); refresh(); fetchMonth(PK.y,PK.m,true).then(pkRender); return; }
     closeMask('formMask'); PK.sel.clear(); toast(`已登記 ${r.dates.length} 天`); refresh();
   }).catch(e=>showErr('fErr',e.message)).finally(()=>{ btn.disabled=false; btn.textContent='送出'; });
+}
+
+/* ---------- 鉛筆假：申請讓出 / 回覆 ---------- */
+
+let REQS = [];
+function loadRequests(){
+  if (!TOKEN) return;
+  api('getRequests').then(r=>{ REQS = r || []; renderRequests(); }).catch(()=>{});
+}
+function dismissed(){ try { return JSON.parse(localStorage.getItem('leave_dismiss')||'[]'); } catch(e){ return []; } }
+function dismissReq(id){ const d = dismissed(); d.push(id); store('leave_dismiss', JSON.stringify(d.slice(-200))); renderRequests(); }
+
+function renderRequests(){
+  const dis = dismissed();
+  const incoming = REQS.filter(q=>q.status==='待回覆' && (ADMIN || q.owner===NAME));
+  const outgoing = REQS.filter(q=>q.status==='待回覆' && !ADMIN && q.from===NAME);
+  const results  = REQS.filter(q=>q.status!=='待回覆' && !ADMIN && q.from===NAME && q.status!=='已撤回' && dis.indexOf(q.id)<0);
+  let html = '';
+  if (incoming.length) {
+    html += `<div class="rq-sec">待${ADMIN?'':'你'}回覆</div>` + incoming.map(q=>`
+      <div class="rq">
+        <div class="rq-txt"><b>${esc(q.from)}</b> 想要${ADMIN?' <b>'+esc(q.owner)+'</b> ':'你'} <b>${esc(shortDate(q.date))} ${esc(q.slot)}</b> 的鉛筆假，改成${esc(q.type)}</div>
+        <div class="rq-reason">事由：${esc(q.reason)}</div>
+        <div class="rq-btns"><button onclick="answerReq('${q.id}',false)">拒絕</button><button class="ok" onclick="answerReq('${q.id}',true)">同意讓出</button></div>
+      </div>`).join('');
+  }
+  if (outgoing.length) {
+    html += `<div class="rq-sec">你的申請</div>` + outgoing.map(q=>`
+      <div class="rq done">
+        <div class="rq-txt">等 <b>${esc(q.owner)}</b> 回覆：${esc(shortDate(q.date))} ${esc(q.slot)}（${esc(q.type)}）</div>
+        <button class="ghost" onclick="withdrawReq('${q.id}')">撤回</button>
+      </div>`).join('');
+  }
+  if (results.length) {
+    const word = { '已同意':'✅ 同意了', '已拒絕':'❌ 拒絕了', '已失效':'⚠️ 已失效：' };
+    html += `<div class="rq-sec">結果</div>` + results.map(q=>`
+      <div class="rq done">
+        <div class="rq-txt">${q.status==='已失效'
+          ? `⚠️ 你向 <b>${esc(q.owner)}</b> 申請的 ${esc(shortDate(q.date))} ${esc(q.slot)} 已失效（鉛筆假已變動）`
+          : `<b>${esc(q.owner)}</b> ${word[q.status]}你的申請：${esc(shortDate(q.date))} ${esc(q.slot)}${q.status==='已同意'?'，已登記為'+esc(q.type):''}`}</div>
+        <button class="x" onclick="dismissReq('${q.id}')">✕</button>
+      </div>`).join('');
+  }
+  $('reqBody').innerHTML = html;
+  $('reqCard').classList.toggle('show', !!html);
+}
+
+function answerReq(id, accept){
+  const q = REQS.find(x=>x.id===id);
+  if (accept && !confirm(`確定把 ${shortDate(q.date)} ${q.slot} 的鉛筆假讓給 ${q.from}？`)) return;
+  api('respondRequest', id, accept).then(()=>{
+    toast(accept ? `已讓給 ${q.from}` : '已拒絕');
+    invalidate(); refresh();
+  }).catch(e=>{ toast(e.message); refresh(); });
+}
+function withdrawReq(id){
+  if (!confirm('確定撤回這筆申請？')) return;
+  api('withdrawRequest', id).then(()=>{ toast('已撤回'); loadRequests(); }).catch(e=>{ toast(e.message); loadRequests(); });
+}
+
+let ASK = null;
+function openAsk(i){
+  const r = openDay._rows[i];
+  const mine = new Set();
+  leavesOn(DAY).filter(l=>l.name===NAME).forEach(l=>slotsOf(l.slot).forEach(x=>mine.add(x)));
+  // 可以申請的時段：這張鉛筆假涵蓋、而且我自己那個時段還沒登記
+  const covered = r.parts.flatMap(p=>slotsOf(p.slot)).filter(x=>!mine.has(x));
+  if (!covered.length) return toast('你這天的時段都已經有登記了');
+  const opts = covered.length===2 ? ['全天','上午','下午'] : covered;
+  $('askSlot').innerHTML = opts.map(o=>`<option>${o}</option>`).join('');
+  $('askType').innerHTML = INIT.types.filter(t=>!isPencil(t)).map(t=>`<option>${esc(t)}</option>`).join('');
+  $('askReason').value=''; showErr('askErr','');
+  $('askInfo').textContent = `向 ${r.name} 申請 ${shortDate(DAY)} 的鉛筆假`;
+  ASK = { row:r, date:DAY };
+  closeMask('dayMask'); openMask('askMask');
+}
+function submitAsk(){
+  const reason = $('askReason').value.trim();
+  if (!reason) return showErr('askErr','請填寫事由，讓對方知道為什麼需要這天');
+  const slot = $('askSlot').value, type = $('askType').value;
+  // 鉛筆假如果是上午、下午分開兩筆，全天就分兩張申請送出
+  const want = slotsOf(slot);
+  const targets = ASK.row.parts.map(p=>({ id:p.id, slots:slotsOf(p.slot).filter(x=>want.indexOf(x)>=0) })).filter(p=>p.slots.length);
+  const btn=$('askSubmit'); btn.disabled=true; btn.textContent='送出中…';
+  targets.reduce((pr,t)=>pr.then(()=>api('requestPencil', { leaveId:t.id, slot: t.slots.length===2?'全天':t.slots[0], type, reason })), Promise.resolve())
+    .then(()=>{ closeMask('askMask'); toast(`已送出，等 ${ASK.row.name} 同意`); loadRequests(); })
+    .catch(e=>showErr('askErr', e.message))
+    .finally(()=>{ btn.disabled=false; btn.textContent='送出申請'; });
+}
+
+/* ---------- 管理員 ---------- */
+
+/* 管理員換了請假人：清掉已選日期，重新判斷哪些天可以請 */
+$('fWho').addEventListener('change', ()=>{ PK.sel.clear(); pkRender(); });
+
+function openAdmin(){
+  $('adminBody').className='loading'; $('adminBody').textContent='載入中…';
+  openMask('adminMask');
+  api('adminPinStatus').then(list=>{
+    $('adminBody').className='';
+    $('adminBody').innerHTML = list.map(p=>`
+      <div class="dt-row">
+        <span class="ini-lg" style="background:${colorOf[p.name]||'#666'}">${esc(initialOf[p.name]||p.name.charAt(0))}</span>
+        <div class="info"><div style="font-weight:600">${esc(p.name)}</div><div class="muted">PIN：${esc(p.status)}</div></div>
+        <button class="danger" onclick="adminReset('${esc(p.name)}')">重設 PIN</button>
+      </div>`).join('');
+  }).catch(e=>{ $('adminBody').className=''; $('adminBody').textContent=e.message; });
+}
+function adminReset(name){
+  if (!confirm(`確定把 ${name} 的 PIN 重設成 0000？`)) return;
+  api('adminResetPin', name).then(()=>{ toast(`${name} 的 PIN 已重設為 0000`); openAdmin(); }).catch(e=>toast(e.message));
 }
 
 /* ---------- 改 PIN ---------- */
