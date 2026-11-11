@@ -15,6 +15,7 @@
 <style>
   :root { --bg:#f3f4f6; --card:#fff; --text:#111827; --muted:#6b7280; --line:#e5e7eb; --accent:#2563eb; --bad:#dc2626; --soft:#f9fafb; }
   * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html, body { overscroll-behavior-y:contain; }   /* 關掉瀏覽器自己的下拉重整，改用下面的 */
   body { margin:0; font-family:-apple-system,"PingFang TC","Microsoft JhengHei",sans-serif; background:var(--bg); color:var(--text); font-size:15px; }
   select, input, textarea, button { font:inherit; }
   select, input, textarea { padding:10px 12px; border:1px solid var(--line); border-radius:10px; background:#fff; width:100%; }
@@ -168,6 +169,22 @@
   .mini-spin.on { display:inline-block; }
   button.nav-locked { opacity:.4; pointer-events:none; }
 
+  /* 點人名開 LINE */
+  a.line-btn { flex-shrink:0; background:#06C755; color:#fff; text-decoration:none; font-weight:800; font-size:13px;
+               border-radius:10px; padding:6px 10px; line-height:1.4; }
+  .dt-btns { display:flex; gap:6px; flex-shrink:0; align-items:center; }
+
+  /* 下拉重新整理的提示 */
+  #ptr { height:0; overflow:hidden; display:flex; align-items:center; justify-content:center; gap:8px;
+         color:var(--muted); font-size:13px; }
+  #ptr i { width:16px; height:16px; border:2px solid var(--line); border-top-color:var(--muted); border-radius:50%;
+           transition:transform .15s; }
+  #ptr.ready i { transform:rotate(180deg); border-top-color:var(--accent); }
+  #ptr.ready span { color:var(--accent); }
+  #ptr.spin i { border-top-color:var(--accent); animation:spin .8s linear infinite; }
+  /* 觸控手機用下拉；電腦沒有觸控，保留「重新整理」按鈕 */
+  @media (hover:none) and (pointer:coarse) { .refresh-btn { display:none; } }
+
   /* 月曆左右滑動切換 */
   #cal { touch-action:pan-y; }
   #cal.slide-l { animation:slideL .22s ease-out; }
@@ -227,6 +244,7 @@
     </div>
   </header>
 
+  <div id="ptr"><i></i><span></span></div>
   <main>
     <div class="card" id="reqCard">
       <b>鉛筆假申請</b>
@@ -240,12 +258,12 @@
         <button class="arrow" onclick="shiftMonth(1)">›</button>
       </div>
       <div class="grid" id="cal"></div>
-      <div class="hint">點日期可以看當天誰請假</div>
+      <div class="hint">點日期可以看當天誰請假・在最上方往下拉可以重新整理</div>
       <div class="legend" id="legend"></div>
     </div>
 
     <div class="card">
-      <div class="sec-head"><b>近期請假</b><button class="ghost" onclick="refresh()">↻ 重新整理</button></div>
+      <div class="sec-head"><b>近期請假</b><button class="ghost refresh-btn" onclick="refresh()">↻ 重新整理</button></div>
       <div id="upcoming" class="loading">載入中…</div>
     </div>
   </main>
@@ -344,6 +362,13 @@ const API_URL = 'https://script.google.com/macros/s/AKfycbznum_5tyCbBKmoigxujp26
 
 let FORCE = false, FORCE_OLD = '';
 let ADMIN = false;   // 管理員模式（登入時輸入管理員 PIN）
+let CONTACTS = {};   // 各人的 LINE 連結（登入後才從後端拿）
+/** 鉛筆假旁邊的 LINE 按鈕：先私訊對方商量，再送出讓假申請 */
+function lineBtn(n){
+  const url = CONTACTS[n];
+  if (!url || n===NAME) return '';
+  return `<a class="line-btn" href="${esc(url)}" target="_blank" rel="noopener">LINE</a>`;
+}
 let INIT = null, TOKEN = '', NAME = '', cur = { y:0, m:0 }, monthLeaves = [], upcoming = [], colorOf = {};
 const initialOf = {};
 const WD = '日一二三四五六';
@@ -468,7 +493,7 @@ function doLogin(){
     if (r.mustChange) openPin(true, pin); else showApp();
   }).catch(e=>showErr('loginErr',e.message)).finally(()=>{ btn.disabled=false; btn.textContent='登入'; });
 }
-function logout(){ TOKEN=''; store('leave_token',''); store('leave_admin',''); if (ADMIN) { ADMIN=false; NAME=load('leave_name'); } closeMask('adminMask'); closeMask('askMask'); REQS=[]; $('reqCard').classList.remove('show'); closeMask('formMask'); closeMask('dayMask'); showLogin(); }
+function logout(){ TOKEN=''; store('leave_token',''); store('leave_admin',''); if (ADMIN) { ADMIN=false; NAME=load('leave_name'); } closeMask('adminMask'); closeMask('askMask'); REQS=[]; CONTACTS={}; $('reqCard').classList.remove('show'); closeMask('formMask'); closeMask('dayMask'); showLogin(); }
 
 /* 手機上 App 一直開著、隔天再切回來時：更新「今天」與最新假單，避免日期停在前一天 */
 let lastSync = Date.now();
@@ -489,20 +514,57 @@ document.addEventListener('visibilitychange', ()=>{
 /* 重新整理：一趟網路拿齊本月、近期、申請（後端還沒更新時，自動退回分三次拿） */
 let NO_GETALL = false;
 function refresh(){
-  if (NO_GETALL || !TOKEN) { loadMonth(); loadUpcoming(); loadRequests(); return; }
+  if (NO_GETALL || !TOKEN) { loadMonth(); loadUpcoming(); loadRequests(); return new Promise(r=>setTimeout(r,1200)); }
   const y=cur.y, m=cur.m;
+  $('monthTitle').textContent = `${y} 年 ${m} 月`;
   if (monthCache[mkey(y,m)]) { monthLeaves = monthCache[mkey(y,m)]; renderCal(); }
-  api('getAll', ymd(y,m,1), ymd(y,m,daysIn(y,m)), INIT.today, addDays(INIT.today,90)).then(r=>{
+  return api('getAll', ymd(y,m,1), ymd(y,m,daysIn(y,m)), INIT.today, addDays(INIT.today,90)).then(r=>{
     monthCache[mkey(y,m)] = r.month;
     if (y===cur.y && m===cur.m) { monthLeaves = r.month; renderCal(); }
+    CONTACTS = r.contacts || {};
     upcoming = r.upcoming; renderUpcoming();
     REQS = r.requests || []; renderRequests();
     prefetchAround(y,m);
   }).catch(e=>{
-    if (String(e.message).indexOf('未知的功能')>=0) { NO_GETALL = true; refresh(); }
-    else toast(e.message);
+    if (String(e.message).indexOf('未知的功能')>=0) { NO_GETALL = true; return refresh(); }
+    toast(e.message);
   });
 }
+
+/* ---------- 下拉重新整理 ----------
+ * 在頁面最上方往下拉 → 放開就更新資料（不重新載入整個網頁，所以比較快）。
+ * 加到主畫面的 App 原本沒有下拉重整，這裡自己做一個。 */
+(function(){
+  const ind = $('ptr'), TRIGGER = 64;
+  let y0 = null, x0 = 0, pull = 0, busy = false;
+  const anyMask = () => !!document.querySelector('.mask.show');
+  const set = (h, txt, spin) => {
+    ind.style.height = h + 'px';
+    ind.querySelector('span').textContent = txt;
+    ind.classList.toggle('spin', !!spin);
+    ind.classList.toggle('ready', h >= TRIGGER && !spin);
+  };
+  document.addEventListener('touchstart', e=>{
+    if (busy || anyMask() || $('appView').style.display==='none' || window.scrollY > 0) { y0 = null; return; }
+    y0 = e.touches[0].clientY; x0 = e.touches[0].clientX; pull = 0;
+  }, { passive:true });
+  document.addEventListener('touchmove', e=>{
+    if (y0 === null) return;
+    const dy = e.touches[0].clientY - y0, dx = Math.abs(e.touches[0].clientX - x0);
+    if (dy <= 0 || dx > dy) { if (pull) set(0,''); pull = 0; return; }   // 往上滑、或其實是左右滑月曆 → 不算
+    pull = Math.min(dy * 0.5, 96);
+    ind.style.transition = 'none';
+    set(pull, pull >= TRIGGER ? '放開更新' : '下拉重新整理');
+  }, { passive:true });
+  document.addEventListener('touchend', ()=>{
+    if (y0 === null) return;
+    y0 = null;
+    ind.style.transition = 'height .2s';
+    if (pull < TRIGGER) { set(0,''); pull = 0; return; }
+    busy = true; set(48, '更新中…', true);
+    Promise.resolve(refresh()).finally(()=>{ busy = false; pull = 0; set(0,''); });
+  }, { passive:true });
+})();
 
 /** 按下去立刻有反應：按鈕變「處理中…」並鎖住，避免以為沒按到又按一次 */
 function busyBtn(btn, on, text){
@@ -667,8 +729,9 @@ function openDay(ds){
     let askBtn = '';
     if (isPencil(r.type) && !ADMIN && r.name!==NAME && ds>=INIT.today) {
       const waiting = REQS.some(q=>q.status==='待回覆' && q.from===NAME && q.owner===r.name && q.date===ds);
-      askBtn = waiting ? `<span class="muted" style="flex-shrink:0">已申請・等回覆</span>`
-                       : `<button class="primary" style="flex-shrink:0;padding:6px 10px;font-size:13px" onclick="openAsk(${i})">請她讓給我</button>`;
+      askBtn = `<div class="dt-btns">${lineBtn(r.name)}` +
+               (waiting ? `<span class="muted">已申請・等回覆</span>`
+                        : `<button class="primary" style="padding:6px 10px;font-size:13px" onclick="openAsk(${i})">請她讓給我</button>`) + `</div>`;
     }
     return `<div class="dt-row">
       <span class="ini-lg ${typeCls(r.type)}" style="${typeStyle(r.type,c)}">${isPencil(r.type)?`<b>${esc(initialOf[r.name]||r.name.charAt(0))}</b>`:esc(initialOf[r.name]||r.name.charAt(0))}</span>
