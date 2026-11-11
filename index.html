@@ -294,7 +294,7 @@
       <div><label>時段</label><select id="askSlot"></select></div>
       <div><label>改成</label><select id="askType"></select></div>
     </div>
-    <label>事由（必填，對方會看到）</label><textarea id="askReason" rows="2" maxlength="200" placeholder="例如：家裡臨時有事"></textarea>
+    <label>事由（選填，對方會看到）</label><textarea id="askReason" rows="2" maxlength="200" placeholder="例如：家裡臨時有事"></textarea>
     <div class="muted" style="margin-top:6px">送出後要等對方按「同意」才會生效</div>
     <div class="err" id="askErr"></div>
     <div class="actions">
@@ -864,7 +864,7 @@ function renderRequests(){
     html += `<div class="rq-sec">待${ADMIN?'':'你'}回覆</div>` + incoming.map(q=>`
       <div class="rq">
         <div class="rq-txt"><b>${esc(q.from)}</b> 想要${ADMIN?' <b>'+esc(q.owner)+'</b> ':'你'} <b>${esc(shortDate(q.date))} ${esc(q.slot)}</b> 的鉛筆假，改成${esc(q.type)}</div>
-        <div class="rq-reason">事由：${esc(q.reason)}</div>
+        ${q.reason?`<div class="rq-reason">事由：${esc(q.reason)}</div>`:''}
         <div class="rq-btns"><button onclick="answerReq('${q.id}',false)">拒絕</button><button class="ok" onclick="answerReq('${q.id}',true)">同意讓出</button></div>
       </div>`).join('');
   }
@@ -919,8 +919,7 @@ function openAsk(i){
   closeMask('dayMask'); openMask('askMask');
 }
 function submitAsk(){
-  const reason = $('askReason').value.trim();
-  if (!reason) return showErr('askErr','請填寫事由，讓對方知道為什麼需要這天');
+  const reason = $('askReason').value.trim();   // 事由選填
   const slot = $('askSlot').value, type = $('askType').value;
   // 鉛筆假如果是上午、下午分開兩筆，全天就分兩張申請送出
   const want = slotsOf(slot);
