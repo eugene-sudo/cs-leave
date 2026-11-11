@@ -486,7 +486,32 @@ document.addEventListener('visibilitychange', ()=>{
 
 /* ---------- 月曆 ---------- */
 
-function refresh(){ loadMonth(); loadUpcoming(); loadRequests(); }
+/* 重新整理：一趟網路拿齊本月、近期、申請（後端還沒更新時，自動退回分三次拿） */
+let NO_GETALL = false;
+function refresh(){
+  if (NO_GETALL || !TOKEN) { loadMonth(); loadUpcoming(); loadRequests(); return; }
+  const y=cur.y, m=cur.m;
+  if (monthCache[mkey(y,m)]) { monthLeaves = monthCache[mkey(y,m)]; renderCal(); }
+  api('getAll', ymd(y,m,1), ymd(y,m,daysIn(y,m)), INIT.today, addDays(INIT.today,90)).then(r=>{
+    monthCache[mkey(y,m)] = r.month;
+    if (y===cur.y && m===cur.m) { monthLeaves = r.month; renderCal(); }
+    upcoming = r.upcoming; renderUpcoming();
+    REQS = r.requests || []; renderRequests();
+    prefetchAround(y,m);
+  }).catch(e=>{
+    if (String(e.message).indexOf('未知的功能')>=0) { NO_GETALL = true; refresh(); }
+    else toast(e.message);
+  });
+}
+
+/** 按下去立刻有反應：按鈕變「處理中…」並鎖住，避免以為沒按到又按一次 */
+function busyBtn(btn, on, text){
+  if (!btn) return;
+  const box = btn.closest('.rq, .dt-row, .item') || btn.parentNode;
+  box.querySelectorAll('button').forEach(b=>{ b.disabled = on; });
+  if (on) { btn._t = btn.textContent; btn.textContent = text || '處理中…'; }
+  else if (btn._t) btn.textContent = btn._t;
+}
 /* 載入中鎖定：資料還沒回來前，不能再滑動或按箭頭切換月份 */
 const BUSY = { main:false, pk:false };
 function setBusy(which, on){
@@ -651,7 +676,7 @@ function openDay(ds){
         <div class="who" style="display:flex;gap:6px;align-items:center;font-weight:600">${esc(r.name)}<span class="tag ${typeCls(r.type)}">${esc(r.type)}</span></div>
         <div class="muted">${esc(r.slot)}${r.reason?'・'+esc(r.reason):''}</div>
       </div>
-      ${canCancel?`<button class="danger" onclick="cancelDayRow(${i})">取消</button>`:askBtn}
+      ${canCancel?`<button class="danger" onclick="cancelDayRow(${i},this)">取消</button>`:askBtn}
     </div>`;
   }).join('');
   $('dBody').innerHTML = body;
@@ -662,10 +687,12 @@ function openDay(ds){
     (free.length ? `<button class="primary" onclick="closeMask('dayMask');openForm('${ds}')">請這天${free.length===1?'（'+free[0]+'）':''}</button>` : '');
   openMask('dayMask');
 }
-function cancelDayRow(i){
+function cancelDayRow(i, btn){
   const r = openDay._rows[i];
   if (!confirm(`確定取消 ${shortDate(DAY)} ${r.slot}的${r.type}？`)) return;
-  api('cancelLeave', r.ids).then(()=>{ toast('已取消'); closeMask('dayMask'); invalidate(); refresh(); }).catch(e=>toast(e.message));
+  busyBtn(btn, true, '取消中…');
+  api('cancelLeave', r.ids).then(()=>{ toast('已取消'); closeMask('dayMask'); invalidate(); refresh(); })
+    .catch(e=>{ busyBtn(btn, false); toast(e.message); });
 }
 function invalidate(){ Object.keys(monthCache).forEach(k=>delete monthCache[k]); }
 
@@ -726,17 +753,19 @@ function renderUpcoming(){
         <div class="when muted">${esc(when)}</div>
         ${g.reason?`<div class="muted" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(g.reason)}</div>`:''}
       </div>
-      ${(ADMIN || g.name===NAME)?`<button class="danger" onclick="cancelGroup(${i})">取消</button>`:''}
+      ${(ADMIN || g.name===NAME)?`<button class="danger" onclick="cancelGroup(${i},this)">取消</button>`:''}
     </div>`;
   });
   box.innerHTML = html;
 }
 
-function cancelGroup(i){
+function cancelGroup(i, btn){
   const g = renderUpcoming._groups[i];
   const range = g.start===g.end ? shortDate(g.start) : `${shortDate(g.start)} – ${shortDate(g.end)}（${g.days} 天）`;
   if(!confirm(`確定取消 ${range} 的${g.type}？`)) return;
-  api('cancelLeave', g.ids).then(r=>{ toast(`已取消 ${r.count} 天`); invalidate(); refresh(); }).catch(e=>toast(e.message));
+  busyBtn(btn, true, '取消中…');
+  api('cancelLeave', g.ids).then(r=>{ toast(`已取消 ${r.count} 天`); invalidate(); refresh(); })
+    .catch(e=>{ busyBtn(btn, false); toast(e.message); });
 }
 
 /* ---------- 請假：臨時月曆可複選（可以跨月份） ---------- */
@@ -871,14 +900,14 @@ function renderRequests(){
       <div class="rq">
         <div class="rq-txt"><b>${esc(q.from)}</b> 想要${ADMIN?' <b>'+esc(q.owner)+'</b> ':'你'} <b>${esc(shortDate(q.date))} ${esc(q.slot)}</b> 的鉛筆假，改成${esc(q.type)}</div>
         ${q.reason?`<div class="rq-reason">事由：${esc(q.reason)}</div>`:''}
-        <div class="rq-btns"><button onclick="answerReq('${q.id}',false)">拒絕</button><button class="ok" onclick="answerReq('${q.id}',true)">同意讓出</button></div>
+        <div class="rq-btns"><button onclick="answerReq('${q.id}',false,this)">拒絕</button><button class="ok" onclick="answerReq('${q.id}',true,this)">同意讓出</button></div>
       </div>`).join('');
   }
   if (outgoing.length) {
     html += `<div class="rq-sec">你的申請</div>` + outgoing.map(q=>`
       <div class="rq done">
         <div class="rq-txt">等 <b>${esc(q.owner)}</b> 回覆：${esc(shortDate(q.date))} ${esc(q.slot)}（${esc(q.type)}）</div>
-        <button class="ghost" onclick="withdrawReq('${q.id}')">撤回</button>
+        <button class="ghost" onclick="withdrawReq('${q.id}',this)">撤回</button>
       </div>`).join('');
   }
   if (results.length) {
@@ -895,17 +924,21 @@ function renderRequests(){
   $('reqCard').classList.toggle('show', !!html);
 }
 
-function answerReq(id, accept){
+function answerReq(id, accept, btn){
   const q = REQS.find(x=>x.id===id);
   if (accept && !confirm(`確定把 ${shortDate(q.date)} ${q.slot} 的鉛筆假讓給 ${q.from}？`)) return;
+  busyBtn(btn, true, accept ? '讓出中…' : '處理中…');
   api('respondRequest', id, accept).then(()=>{
     toast(accept ? `已讓給 ${q.from}` : '已拒絕');
+    REQS = REQS.filter(x=>x.id!==id); renderRequests();      // 先把這筆從畫面拿掉，不用等重新整理
     invalidate(); refresh();
-  }).catch(e=>{ toast(e.message); refresh(); });
+  }).catch(e=>{ busyBtn(btn, false); toast(e.message); refresh(); });
 }
-function withdrawReq(id){
+function withdrawReq(id, btn){
   if (!confirm('確定撤回這筆申請？')) return;
-  api('withdrawRequest', id).then(()=>{ toast('已撤回'); loadRequests(); }).catch(e=>{ toast(e.message); loadRequests(); });
+  busyBtn(btn, true, '撤回中…');
+  api('withdrawRequest', id).then(()=>{ toast('已撤回'); REQS = REQS.filter(x=>x.id!==id); renderRequests(); })
+    .catch(e=>{ busyBtn(btn, false); toast(e.message); refresh(); });
 }
 
 let ASK = null;
