@@ -72,8 +72,13 @@
          font-size:11px; font-weight:800; color:#fff; border:1.5px solid transparent; line-height:1; overflow:hidden; }
   .seg.alt { background:#fff !important; }   /* 代理OP：空心框 */
   /* 鉛筆假：像鉛筆畫的斜線，表示暫定、可以塗改 */
-  .seg.pencil, .ini-lg.pencil { background:repeating-linear-gradient(135deg, var(--c) 0 2px, #fff 2px 5px) !important;
-                                border:1.5px dashed var(--c); color:var(--c); text-shadow:0 0 3px #fff, 0 0 3px #fff, 0 0 2px #fff; }
+  .seg.pencil, .ini-lg.pencil { background:repeating-linear-gradient(135deg, var(--c) 0 1.5px, #fff 1.5px 6px) !important;
+                                border:1.5px dashed var(--c); color:var(--c); }
+  /* 鉛筆假的字母放在白色小圓底上，斜線再密也看得清楚 */
+  .seg.pencil b { display:inline-flex; align-items:center; justify-content:center; min-width:16px; height:16px; padding:0 3px;
+                  border-radius:999px; background:#fff; box-shadow:0 0 0 1.5px var(--c); font-weight:800; }
+  .ini-lg.pencil b { display:inline-flex; align-items:center; justify-content:center; width:22px; height:22px;
+                     border-radius:50%; background:#fff; font-weight:800; }
 
   /* 當天詳情 */
   .dt-row { display:flex; align-items:center; gap:10px; padding:10px 0; border-bottom:1px solid var(--line); }
@@ -597,7 +602,8 @@ function renderCal(){
 function renderSlots(list){
   const seg = l => {
     const c = colorOf[l.name]||'#666';
-    return `<span class="seg ${typeCls(l.type)}" style="${typeStyle(l.type,c)}">${esc(initialOf[l.name]||l.name.charAt(0))}</span>`;
+    const ini = esc(initialOf[l.name]||l.name.charAt(0));
+    return `<span class="seg ${typeCls(l.type)}" style="${typeStyle(l.type,c)}">${isPencil(l.type)?`<b>${ini}</b>`:ini}</span>`;
   };
   const am = covers(list,'上午'), pm = covers(list,'下午');
   if (!am.length && !pm.length) return '<div class="slots"><div class="stripe"></div></div>';
@@ -640,7 +646,7 @@ function openDay(ds){
                        : `<button class="primary" style="flex-shrink:0;padding:6px 10px;font-size:13px" onclick="openAsk(${i})">請她讓給我</button>`;
     }
     return `<div class="dt-row">
-      <span class="ini-lg ${typeCls(r.type)}" style="${typeStyle(r.type,c)}">${esc(initialOf[r.name]||r.name.charAt(0))}</span>
+      <span class="ini-lg ${typeCls(r.type)}" style="${typeStyle(r.type,c)}">${isPencil(r.type)?`<b>${esc(initialOf[r.name]||r.name.charAt(0))}</b>`:esc(initialOf[r.name]||r.name.charAt(0))}</span>
       <div class="info">
         <div class="who" style="display:flex;gap:6px;align-items:center;font-weight:600">${esc(r.name)}<span class="tag ${typeCls(r.type)}">${esc(r.type)}</span></div>
         <div class="muted">${esc(r.slot)}${r.reason?'・'+esc(r.reason):''}</div>
