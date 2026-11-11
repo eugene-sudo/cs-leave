@@ -184,6 +184,28 @@
   .type-opt.cur { border-color:#111827; background:#fff; }
   .type-opt.cur::after { content:'目前'; margin-left:auto; font-size:12px; color:var(--muted); }
 
+  /* 本月輪值 */
+  #rotCard { display:none; }
+  #rotCard.show { display:block; }
+  #rotCard { padding:8px 12px 6px; }
+  .rot-head { display:flex; justify-content:space-between; align-items:center; font-size:13px; }
+  .rot-head b { font-size:13px; color:var(--muted); font-weight:700; }
+  .rot-head .ghost { padding:2px 4px; font-size:12px; }
+  .rot-row { display:flex; align-items:center; gap:6px; padding:5px 8px; margin:2px -8px 0; border-radius:8px; font-size:14px; min-width:0; }
+  .rot-row .what { color:var(--muted); font-size:13px; white-space:nowrap; flex-shrink:0; width:7.6em; overflow:hidden; text-overflow:ellipsis; }
+  .rot-row .who { display:flex; align-items:center; gap:5px; font-weight:700; color:var(--text); min-width:0; white-space:nowrap; }
+  .rot-row .next { margin-left:auto; font-size:12px; color:var(--muted); white-space:nowrap; flex-shrink:0; }
+  .rot-row.me { background:#fef9c3; }
+  .rot-badge { font-size:11px; font-weight:700; border-radius:999px; padding:1px 6px; background:#facc15; color:#713f12; white-space:nowrap; flex-shrink:0; }
+  .rot-badge.soon { margin-left:auto; background:#e5e7eb; color:#374151; }
+  .ini-sm { width:20px; height:20px; border-radius:50%; color:#fff; font-size:10.5px; font-weight:800; flex-shrink:0;
+            display:inline-flex; align-items:center; justify-content:center; }
+  .rot-tbl { width:100%; border-collapse:collapse; font-size:13px; margin-top:8px; }
+  .rot-tbl th, .rot-tbl td { padding:6px 4px; border-bottom:1px solid var(--line); text-align:left; }
+  .rot-tbl th { color:var(--muted); font-weight:600; font-size:12px; }
+  .rot-tbl tr.cur td { font-weight:700; }
+  .rot-tbl td.mine { color:#a16207; font-weight:800; }
+
   /* 下拉重新整理的提示 */
   #ptr { height:0; overflow:hidden; display:flex; align-items:center; justify-content:center; gap:8px;
          color:var(--muted); font-size:13px; }
@@ -256,6 +278,11 @@
 
   <div id="ptr"><i></i><span></span></div>
   <main>
+    <div class="card" id="rotCard">
+      <div class="rot-head"><b id="rotTitle"></b><button class="ghost" id="rotToggle" onclick="toggleRot()">排班表 ▾</button></div>
+      <div id="rotBody"></div>
+      <div id="rotTable" style="display:none"></div>
+    </div>
     <div class="card" id="reqCard">
       <b>鉛筆假申請</b>
       <div id="reqBody"></div>
@@ -501,6 +528,7 @@ function showApp(){
   $('meAvatar').style.background = ADMIN ? '#111827' : (colorOf[NAME] || '#6b7280');
   $('btnPin').style.display = ADMIN ? 'none' : '';
   $('btnAdmin').style.display = ADMIN ? '' : 'none';
+  renderRotation();
   refresh();
 }
 $('pinIn').addEventListener('keydown', e=>{ if(e.key==='Enter') doLogin(); });
@@ -528,7 +556,8 @@ document.addEventListener('visibilitychange', ()=>{
   lastSync = Date.now();
   call('getInitData').then(d=>{
     const dayChanged = d.today !== INIT.today;
-    INIT.today = d.today; INIT.holidays = d.holidays;
+    INIT.today = d.today; INIT.holidays = d.holidays; if (d.rotations) INIT.rotations = d.rotations;
+    renderRotation();
     if (dayChanged) [...PK.sel].forEach(x=>{ if (x < d.today) PK.sel.delete(x); });
     refresh();
   }).catch(()=>{});
@@ -965,6 +994,55 @@ function submitForm(){
     if(!r.ok){ showErr('fErr','無法送出：\n'+r.conflicts.join('\n')); refresh(); fetchMonth(PK.y,PK.m,true).then(pkRender); return; }
     closeMask('formMask'); PK.sel.clear(); toast(`已登記 ${r.dates.length} 天`); refresh();
   }).catch(e=>showErr('fErr',e.message)).finally(()=>{ btn.disabled=false; btn.textContent='送出'; });
+}
+
+/* ---------- 本月輪值 ----------
+ * 設定在 Code.gs 的 ROTATIONS：從 start 月份開始，照 order 每人一個月輪下去。 */
+
+/** 某個月輪到誰 */
+function rotWho(rot, y, m){
+  const [sy, sm] = rot.start.split('-').map(Number);
+  const n = rot.order.length, k = (y*12+m) - (sy*12+sm);
+  return rot.order[((k % n) + n) % n];
+}
+function addMonth(y, m, d){ m += d; while (m>12){ m-=12; y++; } while (m<1){ m+=12; y--; } return [y, m]; }
+function personChip(n){
+  const c = colorOf[n] || '#9ca3af';
+  const ini = initialOf[n] || n.replace(/^EBC-CS/,'C').slice(0,2);   // EBC-CS2 → C2
+  return `<span class="ini-sm" style="background:${c}">${esc(ini)}</span>${esc(n)}`;
+}
+
+function renderRotation(){
+  const rots = (INIT && INIT.rotations) || [];
+  $('rotCard').classList.toggle('show', rots.length > 0);
+  if (!rots.length) return;
+  const [ty, tm, td] = parts(INIT.today);
+  const [ny, nm] = addMonth(ty, tm, 1);
+  const lastWeek = td > daysIn(ty, tm) - 7;          // 月底最後一週，提醒下個月換誰
+  $('rotTitle').textContent = `本月輪值（${tm} 月）`;
+  $('rotBody').innerHTML = rots.map(r=>{
+    const now = rotWho(r, ty, tm), next = rotWho(r, ny, nm);
+    const mine = !ADMIN && now === NAME, soon = !ADMIN && lastWeek && next === NAME && !mine;
+    return `<div class="rot-row ${mine?'me':''}">
+      <span class="what">${esc(r.title)}</span>
+      <span class="who">${personChip(now)}</span>${mine ? '<span class="rot-badge">輪到你</span>' : ''}
+      ${soon ? '<span class="rot-badge soon">🔔 下月換你</span>' : `<span class="next">下月 ${esc(next)}</span>`}
+    </div>`;
+  }).join('');
+
+  // 排班表：接下來 6 個月
+  let html = `<table class="rot-tbl"><tr><th>月份</th>${rots.map(r=>`<th>${esc(r.title)}</th>`).join('')}</tr>`;
+  for (let i=0; i<6; i++){
+    const [y, m] = addMonth(ty, tm, i);
+    html += `<tr class="${i===0?'cur':''}"><td>${y!==ty?y+'/':''}${m} 月</td>` +
+      rots.map(r=>{ const w = rotWho(r, y, m); return `<td class="${!ADMIN && w===NAME?'mine':''}">${esc(w)}</td>`; }).join('') + '</tr>';
+  }
+  $('rotTable').innerHTML = html + '</table>';
+}
+function toggleRot(){
+  const t = $('rotTable'), open = t.style.display === 'none';
+  t.style.display = open ? '' : 'none';
+  $('rotToggle').textContent = open ? '排班表 ▴' : '排班表 ▾';
 }
 
 /* ---------- 改假別 ---------- */
