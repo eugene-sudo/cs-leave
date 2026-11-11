@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>CS 假單</title>
-<meta name="theme-color" content="#2563eb">
+<title>CS Leave</title>
+<meta name="theme-color" content="#0b1f36">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="CS 假單">
+<meta name="apple-mobile-web-app-title" content="CS Leave">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="robots" content="noindex, nofollow">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%232563eb'/%3E%3Ctext x='50' y='68' font-size='52' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='700'%3E假%3C/text%3E%3C/svg%3E">
@@ -184,27 +184,37 @@
   .type-opt.cur { border-color:#111827; background:#fff; }
   .type-opt.cur::after { content:'目前'; margin-left:auto; font-size:12px; color:var(--muted); }
 
-  /* 本月輪值 */
-  #rotCard { display:none; }
+  /* 本月輪值：深藍＋金色的金融風格 */
+  #rotCard { display:none; padding:12px 14px 10px; color:#e8edf4; border:1px solid #1d3a5c;
+             background:linear-gradient(135deg, #0b1f36 0%, #12304f 60%, #163a5f 100%);
+             box-shadow:0 6px 18px rgba(11,31,54,.25); }
   #rotCard.show { display:block; }
-  #rotCard { padding:8px 12px 6px; }
-  .rot-head { display:flex; justify-content:space-between; align-items:center; font-size:13px; }
-  .rot-head b { font-size:13px; color:var(--muted); font-weight:700; }
-  .rot-head .ghost { padding:2px 4px; font-size:12px; }
-  .rot-row { display:flex; align-items:center; gap:6px; padding:5px 8px; margin:2px -8px 0; border-radius:8px; font-size:14px; min-width:0; }
-  .rot-row .what { color:var(--muted); font-size:13px; white-space:nowrap; flex-shrink:0; width:7.6em; overflow:hidden; text-overflow:ellipsis; }
-  .rot-row .who { display:flex; align-items:center; gap:5px; font-weight:700; color:var(--text); min-width:0; white-space:nowrap; }
-  .rot-row .next { margin-left:auto; font-size:12px; color:var(--muted); white-space:nowrap; flex-shrink:0; }
-  .rot-row.me { background:#fef9c3; }
-  .rot-badge { font-size:11px; font-weight:700; border-radius:999px; padding:1px 6px; background:#facc15; color:#713f12; white-space:nowrap; flex-shrink:0; }
-  .rot-badge.soon { margin-left:auto; background:#e5e7eb; color:#374151; }
-  .ini-sm { width:20px; height:20px; border-radius:50%; color:#fff; font-size:10.5px; font-weight:800; flex-shrink:0;
-            display:inline-flex; align-items:center; justify-content:center; }
-  .rot-tbl { width:100%; border-collapse:collapse; font-size:13px; margin-top:8px; }
-  .rot-tbl th, .rot-tbl td { padding:6px 4px; border-bottom:1px solid var(--line); text-align:left; }
-  .rot-tbl th { color:var(--muted); font-weight:600; font-size:12px; }
-  .rot-tbl tr.cur td { font-weight:700; }
-  .rot-tbl td.mine { color:#a16207; font-weight:800; }
+  .rot-head { display:flex; justify-content:space-between; align-items:center; padding-bottom:8px; margin-bottom:2px;
+              border-bottom:1px solid rgba(201,162,39,.35); }
+  .rot-head b { font-size:12px; font-weight:700; letter-spacing:.12em; color:#c9a227; }
+  .rot-head b small { font-size:10px; letter-spacing:.18em; color:#8fa3bb; font-weight:600; margin-right:6px; }
+  .rot-head .ghost { color:#b8c6d6; padding:2px 4px; font-size:12px; }
+  .rot-row { display:flex; align-items:center; gap:8px; padding:8px 6px; margin:0 -6px; font-size:14px; min-width:0;
+             border-bottom:1px solid rgba(255,255,255,.07); border-radius:6px; }
+  .rot-row:last-child { border-bottom:0; }
+  .rot-row .what { color:#8fa3bb; font-size:12.5px; white-space:nowrap; flex-shrink:0; width:7.8em; overflow:hidden; text-overflow:ellipsis; }
+  .rot-row .who { display:flex; align-items:center; gap:6px; font-weight:700; color:#fff; min-width:0; white-space:nowrap; letter-spacing:.02em; }
+  .rot-row .next { margin-left:auto; font-size:11.5px; color:#8fa3bb; white-space:nowrap; flex-shrink:0; }
+  .rot-row .next b { color:#d6dee8; font-weight:600; margin-left:3px; }
+  .rot-row.me { background:rgba(201,162,39,.14); box-shadow:inset 3px 0 0 #c9a227; }
+  .rot-badge { font-size:10.5px; font-weight:800; letter-spacing:.08em; border-radius:3px; padding:2px 6px;
+               background:#c9a227; color:#0b1f36; white-space:nowrap; flex-shrink:0; }
+  .rot-badge.soon { margin-left:auto; background:transparent; color:#e6c65c; border:1px solid rgba(201,162,39,.6); }
+  .ini-sm { width:20px; height:20px; border-radius:50%; color:#fff; font-size:10px; font-weight:800; flex-shrink:0;
+            display:inline-flex; align-items:center; justify-content:center; letter-spacing:0; }
+  #rotCard .ini-sm { box-shadow:0 0 0 1.5px rgba(255,255,255,.85); }
+  .rot-tbl { width:100%; border-collapse:collapse; font-size:12.5px; margin-top:10px; font-variant-numeric:tabular-nums; }
+  .rot-tbl th, .rot-tbl td { padding:7px 4px; border-bottom:1px solid rgba(255,255,255,.08); text-align:left; }
+  .rot-tbl th { color:#c9a227; font-weight:700; font-size:11px; letter-spacing:.1em; border-bottom:1px solid rgba(201,162,39,.35); }
+  .rot-tbl td { color:#d6dee8; }
+  .rot-tbl td:first-child { color:#8fa3bb; }
+  .rot-tbl tr.cur td { color:#fff; font-weight:700; }
+  .rot-tbl td.mine { color:#e6c65c; font-weight:800; }
 
   /* 下拉重新整理的提示 */
   #ptr { height:0; overflow:hidden; display:flex; align-items:center; justify-content:center; gap:8px;
@@ -245,6 +255,60 @@
   #bootView { min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; color:var(--muted); padding:24px; text-align:center; }
   .spinner { width:32px; height:32px; border:3px solid var(--line); border-top-color:var(--accent); border-radius:50%; animation:spin .8s linear infinite; }
   @keyframes spin { to { transform:rotate(360deg); } }
+
+  /* ================= 主題：深藍＋金・米白紙感（金融風） ================= */
+
+:root { --bg:#eef1f5; --card:#fff; --text:#0b1f36; --muted:#64748b; --line:#e2e8f0; --accent:#12304f; --soft:#f6f8fb; --gold:#b8921f; }
+body { font-feature-settings:"tnum"; }
+header { background:linear-gradient(135deg,#0b1f36,#163a5f) !important; border-bottom:2px solid #c9a227 !important; }
+header h1 { color:#fff; letter-spacing:.08em; }
+header h1 .gold, #loginView h2 .gold { color:#c9a227; }
+.me b { color:#fff; }
+.me .ghost { color:#b8c6d6 !important; }
+#meAvatar { box-shadow:0 0 0 2px #c9a227; }
+.card { border-radius:10px; box-shadow:0 1px 3px rgba(11,31,54,.08); border:1px solid #e2e8f0; }
+#rotCard { border-radius:10px; }
+.nav .title { font-weight:800; letter-spacing:.02em; }
+.nav button { background:#f1f5f9; color:#12304f; border:1px solid #e2e8f0; border-radius:8px; }
+.wd { color:#94a3b8; letter-spacing:.1em; }
+.day { border-radius:8px; }
+.day.today .num { background:#c9a227; color:#0b1f36; }
+.day.full { background:#fbf6e6; }
+.mon-head { background:#0b1f36; color:#fff; border-radius:6px; }
+.mon-head .muted { color:#c9a227; }
+.sec-head b { letter-spacing:.04em; }
+.datebox { border-radius:6px; }
+.tag { background:#eef2f7; color:#12304f; border-radius:4px; }
+.tag.alt { background:#ecf7f1; color:#14532d; }
+button.primary { background:#12304f; }
+.fab { background:linear-gradient(135deg,#0b1f36,#163a5f) !important; color:#e6c65c !important; border:1px solid #c9a227;
+       box-shadow:0 6px 16px rgba(11,31,54,.35) !important; border-radius:12px !important; }
+button.danger { background:#fdf2f2; color:#b42318; border-radius:6px; }
+.legend { border-top-color:#e2e8f0; }
+/* 內容區：米白紙感 */
+:root { --bg:#ecebe6; --soft:#fbfaf6; --line:#e7e2d6; }
+.card:not(#rotCard) { background:#fdfcf8; border-color:#e9e3d3; }
+.nav { padding-bottom:8px; border-bottom:1px solid rgba(184,146,31,.35); margin-bottom:10px; }
+.nav button { background:#fff; border-color:#e6dfcc; }
+.day { background:#f6f3ea; }
+.day.weekend, .day.empty { background:transparent; }
+.day.full { background:#f3ead0; }
+.stripe { background:none !important; box-shadow:inset 0 0 0 1px rgba(11,31,54,.06) !important; background-color:rgba(255,255,255,.7) !important; }
+.wd { color:#8a7a52; }
+.legend { border-top-color:#e9e3d3; }
+.mon-head { background:#12304f; }
+.item { border-bottom-color:#ece6d6; }
+.datebox { background:#fff; border-color:#e6dfcc; }
+
+/* 其他畫面跟著主題 */
+.pk.today { box-shadow:inset 0 0 0 1.5px #c9a227; }
+.pk { background:#f6f3ea; }
+.pk.blank, .pk.off, .pk.hol, .pk.full { background:transparent; }
+.sheet { background:#fdfcf8; }
+#loginView .card { border-top:3px solid #c9a227; }
+#loginView h2 { color:#0b1f36; letter-spacing:.04em; }
+#ptr.ready i, #ptr.spin i { border-top-color:#c9a227; }
+#ptr.ready span { color:#8a6d12; }
 </style>
 </head>
 <body>
@@ -255,7 +319,7 @@
 <!-- 登入 -->
 <div id="loginView">
   <div class="card">
-    <h2 style="margin:0 0 4px">CS 假單系統</h2>
+    <h2 style="margin:0 0 4px">CS <span class="gold">LEAVE</span></h2>
     <div class="muted">請選擇姓名並輸入個人 PIN 碼</div>
     <label>姓名</label><select id="loginName"></select>
     <label>PIN 碼</label><input id="pinIn" type="password" inputmode="numeric" autocomplete="off" maxlength="8">
@@ -267,7 +331,7 @@
 <!-- 主畫面 -->
 <div id="appView">
   <header>
-    <h1>CS 假單</h1>
+    <h1>CS <span class="gold">LEAVE</span></h1>
     <div class="me">
       <span class="avatar" id="meAvatar"></span><b id="meName"></b>
       <button class="ghost" id="btnPin" onclick="openPin()">改PIN</button>
@@ -1019,14 +1083,14 @@ function renderRotation(){
   const [ty, tm, td] = parts(INIT.today);
   const [ny, nm] = addMonth(ty, tm, 1);
   const lastWeek = td > daysIn(ty, tm) - 7;          // 月底最後一週，提醒下個月換誰
-  $('rotTitle').textContent = `本月輪值（${tm} 月）`;
+  $('rotTitle').innerHTML = `<small>ROTATION</small>本月輪值・${tm} 月`;
   $('rotBody').innerHTML = rots.map(r=>{
     const now = rotWho(r, ty, tm), next = rotWho(r, ny, nm);
     const mine = !ADMIN && now === NAME, soon = !ADMIN && lastWeek && next === NAME && !mine;
     return `<div class="rot-row ${mine?'me':''}">
       <span class="what">${esc(r.title)}</span>
       <span class="who">${personChip(now)}</span>${mine ? '<span class="rot-badge">輪到你</span>' : ''}
-      ${soon ? '<span class="rot-badge soon">🔔 下月換你</span>' : `<span class="next">下月 ${esc(next)}</span>`}
+      ${soon ? '<span class="rot-badge soon">下月換你</span>' : `<span class="next">下月<b>${esc(next)}</b></span>`}
     </div>`;
   }).join('');
 
