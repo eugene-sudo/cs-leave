@@ -45,6 +45,18 @@
   /* 月曆 */
   .nav { display:flex; align-items:center; gap:6px; margin-bottom:8px; }
   .nav .title { flex:1; font-size:18px; font-weight:700; padding-left:4px; }
+  /* 點月份標題 → 選年月 */
+  .ym-btn { cursor:pointer; display:inline-flex; align-items:center; gap:4px; border-radius:8px; padding:2px 4px; margin-left:-4px; }
+  .ym-btn:active { background:rgba(0,0,0,.06); }
+  .ym-caret { font-style:normal; font-size:11px; color:var(--muted); }
+  #ymMask { z-index:12; }
+  .ym-year { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
+  .ym-year b { font-size:20px; letter-spacing:.04em; }
+  .ym-year button { width:40px; height:36px; padding:0; font-size:18px; }
+  .ym-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
+  .ym-grid button { padding:14px 0; font-size:15px; font-weight:600; background:var(--soft); color:var(--text); border:1.5px solid var(--line); }
+  .ym-grid button.now { border-color:#c9a227; }
+  .ym-grid button.sel { background:var(--accent); color:#fff; border-color:var(--accent); }
   .nav button { height:34px; padding:0 12px; font-size:14px; }
   .nav .arrow { width:34px; padding:0; font-size:18px; }
   .grid { display:grid; grid-template-columns:repeat(7, minmax(0,1fr)); gap:4px 3px; }
@@ -451,7 +463,7 @@ button.danger { background:#fdf2f2; color:#b42318; border-radius:6px; }
     </div>
     <div class="card">
       <div class="nav">
-        <span class="title"><span id="monthTitle"></span><span class="mini-spin" id="calSpin"></span></span>
+        <span class="title"><span class="ym-btn" onclick="openYM('main')"><span id="monthTitle"></span><i class="ym-caret">▾</i></span><span class="mini-spin" id="calSpin"></span></span>
         <button onclick="goToday()">今天</button>
         <button class="arrow" onclick="shiftMonth(-1)">‹</button>
         <button class="arrow" onclick="shiftMonth(1)">›</button>
@@ -488,7 +500,7 @@ button.danger { background:#fdf2f2; color:#b42318; border-radius:6px; }
     <div id="formWhoPick" style="display:none"><label>請假人（管理員代填）</label><select id="fWho"></select>
       <div class="muted" style="margin-top:4px">管理員可以補登過去的日期</div></div>
     <div class="pk-nav">
-      <span class="title"><span id="pkTitle"></span><span class="mini-spin" id="pkSpin"></span></span>
+      <span class="title"><span class="ym-btn" onclick="openYM('pk')"><span id="pkTitle"></span><i class="ym-caret">▾</i></span><span class="mini-spin" id="pkSpin"></span></span>
       <button onclick="pkShift(-1)">‹</button>
       <button onclick="pkShift(1)">›</button>
     </div>
@@ -573,6 +585,19 @@ button.danger { background:#fdf2f2; color:#b42318; border-radius:6px; }
       <button id="pCancel" onclick="closeMask('pinMask')">取消</button>
       <button class="primary" id="pSubmit" onclick="submitPin()">儲存</button>
     </div>
+  </div>
+</div>
+
+<!-- 選年月 -->
+<div class="mask" id="ymMask" onclick="if(event.target===this)closeMask('ymMask')">
+  <div class="sheet">
+    <div class="ym-year">
+      <button class="arrow" onclick="ymShift(-1)">‹</button>
+      <b id="ymYear"></b>
+      <button class="arrow" onclick="ymShift(1)">›</button>
+    </div>
+    <div class="ym-grid" id="ymGrid"></div>
+    <div class="actions"><button onclick="ymToday()">回到本月</button><button onclick="closeMask('ymMask')">關閉</button></div>
   </div>
 </div>
 
@@ -840,6 +865,39 @@ function onSwipe(el, fn){
 }
 onSwipe($('cal'), shiftMonth);
 function goToday(){ if (BUSY.main) return; const t=parts(INIT.today); cur={ y:t[0], m:t[1] }; loadMonth(); }
+
+/* ---------- 選年月：點月份標題跳出，一次跳到任何年月 ---------- */
+const YM = { target:'main', y:0 };
+function openYM(target){
+  if (BUSY[target]) return;
+  YM.target = target;
+  YM.y = target==='main' ? cur.y : PK.y;
+  ymRender(); openMask('ymMask');
+}
+function ymShift(n){ YM.y += n; ymRender(); }
+function ymRender(){
+  const [ty, tm] = parts(INIT.today);
+  const sy = YM.target==='main' ? cur.y : PK.y, sm = YM.target==='main' ? cur.m : PK.m;
+  $('ymYear').textContent = YM.y + ' 年';
+  $('ymGrid').innerHTML = Array.from({length:12},(_,i)=>i+1).map(m=>{
+    const cls = (YM.y===sy && m===sm) ? 'sel' : (YM.y===ty && m===tm) ? 'now' : '';
+    return `<button class="${cls}" onclick="ymPick(${m})">${m} 月</button>`;
+  }).join('');
+}
+function ymPick(m){ ymGo(YM.y, m); }
+function ymToday(){ const [ty, tm] = parts(INIT.today); ymGo(ty, tm); }
+function ymGo(y, m){
+  closeMask('ymMask');
+  if (YM.target==='main') {
+    const dir = (y*12+m) - (cur.y*12+cur.m);
+    if (!dir) return;
+    cur = { y, m };
+    const cal=$('cal'); cal.classList.remove('slide-l','slide-r'); void cal.offsetWidth; cal.classList.add(dir>0?'slide-l':'slide-r');
+    loadMonth();
+  } else {
+    PK.y = y; PK.m = m; pkLoad();
+  }
+}
 
 function loadMonth(){
   $('monthTitle').textContent = `${cur.y} 年 ${cur.m} 月`;
