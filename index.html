@@ -174,6 +174,16 @@
                border-radius:10px; padding:6px 10px; line-height:1.4; }
   .dt-btns { display:flex; gap:6px; flex-shrink:0; align-items:center; }
 
+  button.mini { background:#f3f4f6; color:var(--text); padding:6px 10px; font-size:13px; flex-shrink:0; }
+  /* 改假別的選項 */
+  .type-opts { display:flex; flex-direction:column; gap:8px; margin-top:14px; }
+  .type-opt { display:flex; align-items:center; gap:10px; padding:12px; border-radius:12px; background:#f9fafb;
+              border:1.5px solid var(--line); color:var(--text); text-align:left; font-size:15px; }
+  .type-opt .sw { width:26px; height:16px; margin:0; }
+  .type-opt small { display:block; color:var(--muted); font-size:12px; margin-top:2px; }
+  .type-opt.cur { border-color:#111827; background:#fff; }
+  .type-opt.cur::after { content:'目前'; margin-left:auto; font-size:12px; color:var(--muted); }
+
   /* 下拉重新整理的提示 */
   #ptr { height:0; overflow:hidden; display:flex; align-items:center; justify-content:center; gap:8px;
          color:var(--muted); font-size:13px; }
@@ -305,6 +315,16 @@
       <button onclick="closeMask('formMask')">取消</button>
       <button class="primary" id="fSubmit" onclick="submitForm()">送出</button>
     </div>
+  </div>
+</div>
+
+<!-- 改假別 -->
+<div class="mask" id="typeMask" onclick="if(event.target===this)closeMask('typeMask')">
+  <div class="sheet">
+    <b style="font-size:17px">改假別</b>
+    <div class="muted" style="margin-top:4px" id="typeInfo"></div>
+    <div class="type-opts" id="typeOpts"></div>
+    <div class="actions"><button onclick="closeMask('typeMask')">取消</button></div>
   </div>
 </div>
 
@@ -508,7 +528,7 @@ function doLogin(){
     if (r.mustChange) openPin(true, pin); else showApp();
   }).catch(e=>showErr('loginErr',e.message)).finally(()=>{ btn.disabled=false; btn.textContent='登入'; });
 }
-function logout(){ TOKEN=''; store('leave_token',''); store('leave_admin',''); if (ADMIN) { ADMIN=false; NAME=load('leave_name'); } closeMask('adminMask'); closeMask('askMask'); REQS=[]; CONTACTS={}; $('reqCard').classList.remove('show'); closeMask('formMask'); closeMask('dayMask'); showLogin(); }
+function logout(){ TOKEN=''; store('leave_token',''); store('leave_admin',''); if (ADMIN) { ADMIN=false; NAME=load('leave_name'); } closeMask('adminMask'); closeMask('askMask'); closeMask('typeMask'); REQS=[]; CONTACTS={}; $('reqCard').classList.remove('show'); closeMask('formMask'); closeMask('dayMask'); showLogin(); }
 
 /* 手機上 App 一直開著、隔天再切回來時：更新「今天」與最新假單，避免日期停在前一天 */
 let lastSync = Date.now();
@@ -754,7 +774,7 @@ function openDay(ds){
         <div class="who" style="display:flex;gap:6px;align-items:center;font-weight:600">${esc(r.name)}<span class="tag ${typeCls(r.type)}">${esc(r.type)}</span></div>
         <div class="muted">${esc(r.slot)}${r.reason?'・'+esc(r.reason):''}</div>
       </div>
-      ${canCancel?`<button class="danger" onclick="cancelDayRow(${i},this)">取消</button>`:askBtn}
+      ${canCancel?`<div class="dt-btns"><button class="mini" onclick="openType('day',${i})">改假別</button><button class="danger" onclick="cancelDayRow(${i},this)">取消</button></div>`:askBtn}
     </div>`;
   }).join('');
   $('dBody').innerHTML = body;
@@ -831,7 +851,7 @@ function renderUpcoming(){
         <div class="when muted">${esc(when)}</div>
         ${g.reason?`<div class="muted" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(g.reason)}</div>`:''}
       </div>
-      ${(ADMIN || g.name===NAME)?`<button class="danger" onclick="cancelGroup(${i},this)">取消</button>`:''}
+      ${(ADMIN || g.name===NAME)?`<div class="dt-btns"><button class="mini" onclick="openType('group',${i})">改假別</button><button class="danger" onclick="cancelGroup(${i},this)">取消</button></div>`:''}
     </div>`;
   });
   box.innerHTML = html;
@@ -955,6 +975,34 @@ function submitForm(){
     if(!r.ok){ showErr('fErr','無法送出：\n'+r.conflicts.join('\n')); refresh(); fetchMonth(PK.y,PK.m,true).then(pkRender); return; }
     closeMask('formMask'); PK.sel.clear(); toast(`已登記 ${r.dates.length} 天`); refresh();
   }).catch(e=>showErr('fErr',e.message)).finally(()=>{ btn.disabled=false; btn.textContent='送出'; });
+}
+
+/* ---------- 改假別 ---------- */
+
+const TYPE_DESC = { '休假':'確定要休', '代理OP':'支援 OP', '鉛筆假':'先佔位，別人有急事可以請你讓出' };
+let TYPE_TARGET = null;
+function openType(from, i){
+  const r = from==='day' ? openDay._rows[i] : renderUpcoming._groups[i];
+  const range = from==='day' ? `${shortDate(DAY)} ${r.slot}`
+              : (r.start===r.end ? `${shortDate(r.start)} ${r.slot}` : `${shortDate(r.start)} – ${shortDate(r.end)}（${r.days} 天）`);
+  TYPE_TARGET = { ids:r.ids, type:r.type, name:r.name };
+  $('typeInfo').textContent = (ADMIN ? r.name+'・' : '') + range;
+  $('typeOpts').innerHTML = INIT.types.map(t=>{
+    const sw = t===PENCIL ? 'pencil' : '';
+    const st = isAlt(t) ? 'background:#fff' : t===PENCIL ? '' : 'background:var(--muted)';
+    return `<button class="type-opt ${t===r.type?'cur':''}" onclick="doChangeType('${esc(t)}',this)">
+      <span class="sw ${sw}" style="${st}"></span><span><b>${esc(t)}</b><small>${esc(TYPE_DESC[t]||'')}</small></span></button>`;
+  }).join('');
+  closeMask('dayMask'); openMask('typeMask');
+}
+function doChangeType(t, btn){
+  if (t===TYPE_TARGET.type) return closeMask('typeMask');
+  if (TYPE_TARGET.type===PENCIL && REQS.some(q=>q.status==='待回覆' && q.owner===TYPE_TARGET.name) &&
+      !confirm('有人正在申請你這張鉛筆假，改成其他假別後，對方的申請會自動失效。確定要改嗎？')) return;
+  busyBtn(btn, true, '修改中…');
+  api('changeLeaveType', TYPE_TARGET.ids, t).then(()=>{
+    toast(`已改成${t}`); closeMask('typeMask'); invalidate(); refresh();
+  }).catch(e=>{ busyBtn(btn, false); toast(e.message); });
 }
 
 /* ---------- 鉛筆假：申請讓出 / 回覆 ---------- */
