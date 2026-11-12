@@ -14,8 +14,9 @@
 <meta name="apple-mobile-web-app-title" content="CS Leave">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="robots" content="noindex, nofollow">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%232563eb'/%3E%3Ctext x='50' y='68' font-size='52' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='700'%3E假%3C/text%3E%3C/svg%3E">
-<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%232563eb'/%3E%3Ctext x='50' y='68' font-size='52' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='700'%3E假%3C/text%3E%3C/svg%3E">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <style>
   :root { --bg:#f3f4f6; --card:#fff; --text:#111827; --muted:#6b7280; --line:#e5e7eb; --accent:#2563eb; --bad:#dc2626; --soft:#f9fafb; }
   * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
@@ -269,6 +270,9 @@
   #appView { display:none; }
   header { padding-top:calc(10px + env(safe-area-inset-top)); }
   #bootView { min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; color:var(--muted); padding:24px; text-align:center; }
+  .boot-icon { width:96px; height:96px; border-radius:22px; box-shadow:0 10px 28px rgba(11,31,54,.35); animation:bootIn .5s ease-out; }
+  .boot-name { font-weight:800; font-size:20px; letter-spacing:.12em; color:var(--text); margin-bottom:10px; } .boot-name span { color:#c9a227; }
+  @keyframes bootIn { from { opacity:0; transform:scale(.9); } to { opacity:1; transform:none; } }
   .spinner { width:32px; height:32px; border:3px solid var(--line); border-top-color:var(--accent); border-radius:50%; animation:spin .8s linear infinite; }
   @keyframes spin { to { transform:rotate(360deg); } }
 
@@ -604,6 +608,34 @@ html.theme-p1 .rot-row.me { background:rgba(255,255,255,.10) !important; }
 html.theme-p1 .rot-badge { background:linear-gradient(180deg,#f9eef0,#e8c9cf) !important; color:#2a1418 !important; }
 html.theme-p1 .rot-badge.soon { background:transparent !important; color:#f9eef0 !important; border-color:#c28b97 !important; }
 html.theme-p1 header h1 { text-shadow:0 1px 0 rgba(0,0,0,.45) !important; } html.theme-p1 header h1 .gold { opacity:.85; }
+/* p1 玻璃質感 */
+html.theme-p1 .card:not(#rotCard) { background:rgba(255,255,255,.62) !important; border:1px solid rgba(255,255,255,.85) !important;
+  -webkit-backdrop-filter:blur(14px); backdrop-filter:blur(14px); box-shadow:0 8px 24px rgba(94,26,41,.10), inset 0 1px 0 #fff !important; }
+html.theme-p1 .sheet { background:rgba(255,250,251,.86) !important; -webkit-backdrop-filter:blur(20px); backdrop-filter:blur(20px); }
+html.theme-p1 .nav button { background:rgba(255,255,255,.7) !important; border:1px solid rgba(255,255,255,.9) !important; color:#5e1a29 !important; box-shadow:0 1px 3px rgba(94,26,41,.10), inset 0 1px 0 #fff; }
+html.theme-p1 .day { background:rgba(255,255,255,.55) !important; box-shadow:inset 0 1px 0 rgba(255,255,255,.9); }
+html.theme-p1 .day.weekend, html.theme-p1 .day.empty { background:transparent !important; box-shadow:none; }
+html.theme-p1 .day.full { background:rgba(201,120,140,.22) !important; }
+html.theme-p1 .stripe { background:rgba(255,255,255,.75) !important; box-shadow:inset 0 0 0 1px rgba(232,216,219,.9) !important; }
+html.theme-p1 .day.today .num { background:linear-gradient(180deg,rgba(255,255,255,.35),rgba(255,255,255,0) 55%), #7a2536 !important; color:#fff !important; box-shadow:0 0 0 2px #fff, 0 2px 6px rgba(94,26,41,.40); }
+html.theme-p1 .datebox { background:rgba(255,255,255,.7) !important; border-color:rgba(255,255,255,.9) !important; }
+html.theme-p1 .tag { background:rgba(255,255,255,.7) !important; color:#5e1a29 !important; border:1px solid rgba(232,216,219,.9); }
+html.theme-p1 button.primary { background:linear-gradient(180deg,rgba(255,255,255,.25),rgba(255,255,255,0) 55%), #7a2536 !important; box-shadow:0 4px 12px rgba(94,26,41,.30), inset 0 1px 0 rgba(255,255,255,.35); }
+html.theme-p1 button.fab { border:1px solid rgba(255,255,255,.3) !important; color:#fff !important;
+  background:linear-gradient(180deg,rgba(255,255,255,.32) 0%,rgba(255,255,255,.05) 48%,rgba(255,255,255,0) 52%), linear-gradient(180deg,#8c3447,#5e1a29) !important;
+  -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px); box-shadow:0 10px 24px rgba(94,26,41,.40), inset 0 1px 0 rgba(255,255,255,.5) !important; }
+html.theme-p1 .pk { background:rgba(255,255,255,.6) !important; } html.theme-p1 .pk.sel { background:#7a2536 !important; }
+html.theme-p1 body { background:radial-gradient(60% 40% at 15% 10%, rgba(140,52,71,.30), transparent 70%), radial-gradient(50% 35% at 90% 35%, rgba(201,120,140,.28), transparent 70%), radial-gradient(60% 40% at 30% 85%, rgba(122,37,54,.18), transparent 70%), linear-gradient(180deg,#f6eef0,#ead9dd) fixed !important; }
+html.theme-p1 header { background:linear-gradient(180deg,rgba(255,255,255,.22) 0%,rgba(255,255,255,0) 55%), rgba(94,26,41,.78) !important;
+  -webkit-backdrop-filter:blur(18px) saturate(160%); backdrop-filter:blur(18px) saturate(160%);
+  border-bottom:1px solid rgba(255,255,255,.18) !important; box-shadow:0 6px 20px rgba(94,26,41,.30), inset 0 1px 0 rgba(255,255,255,.35) !important; }
+html.theme-p1 #rotCard { border:1px solid rgba(255,255,255,.28) !important; background:linear-gradient(180deg,rgba(255,255,255,.26) 0%,rgba(255,255,255,.06) 38%,rgba(255,255,255,0) 50%), linear-gradient(135deg,rgba(140,52,71,.88) 0%,rgba(94,26,41,.90) 55%,rgba(58,15,26,.92) 100%) !important;
+  -webkit-backdrop-filter:blur(16px) saturate(150%); backdrop-filter:blur(16px) saturate(150%);
+  box-shadow:0 12px 30px rgba(94,26,41,.30), inset 0 1px 0 rgba(255,255,255,.45), inset 0 -1px 0 rgba(0,0,0,.25) !important; }
+html.theme-p1 .rot-row.me { background:rgba(255,255,255,.14) !important; box-shadow:inset 3px 0 0 rgba(255,255,255,.9) !important; }
+html.theme-p1 .rot-badge { background:rgba(255,255,255,.92) !important; color:#5e1a29 !important; box-shadow:0 1px 3px rgba(0,0,0,.2); }
+html.theme-p1 .mon-head { background:linear-gradient(180deg,rgba(255,255,255,.22),rgba(255,255,255,0) 60%), rgba(94,26,41,.78) !important; border:1px solid rgba(255,255,255,.25); }
+
 /* p2 */
 html.theme-p2 { --bg:#e8e8ea; --card:#f7f7f8; --text:#111113; --muted:#636368; --line:#dcdce0; --accent:#121214; --soft:#f7f7f8; }
 html.theme-p2 body { background:linear-gradient(180deg,#e8e8ea,#d0d0d4) fixed; }
@@ -651,6 +683,34 @@ html.theme-p2 .rot-row.me { background:rgba(255,255,255,.10) !important; }
 html.theme-p2 .rot-badge { background:linear-gradient(180deg,#f5f5f7,#cbcbd0) !important; color:#111113 !important; }
 html.theme-p2 .rot-badge.soon { background:transparent !important; color:#f5f5f7 !important; border-color:#8e8e94 !important; }
 html.theme-p2 header h1 { text-shadow:0 1px 0 rgba(0,0,0,.45) !important; } html.theme-p2 header h1 .gold { opacity:.85; }
+/* p2 玻璃質感 */
+html.theme-p2 .card:not(#rotCard) { background:rgba(255,255,255,.62) !important; border:1px solid rgba(255,255,255,.85) !important;
+  -webkit-backdrop-filter:blur(14px); backdrop-filter:blur(14px); box-shadow:0 8px 24px rgba(0,0,0,.10), inset 0 1px 0 #fff !important; }
+html.theme-p2 .sheet { background:rgba(250,250,251,.86) !important; -webkit-backdrop-filter:blur(20px); backdrop-filter:blur(20px); }
+html.theme-p2 .nav button { background:rgba(255,255,255,.7) !important; border:1px solid rgba(255,255,255,.9) !important; color:#1c1c1f !important; box-shadow:0 1px 3px rgba(0,0,0,.10), inset 0 1px 0 #fff; }
+html.theme-p2 .day { background:rgba(255,255,255,.55) !important; box-shadow:inset 0 1px 0 rgba(255,255,255,.9); }
+html.theme-p2 .day.weekend, html.theme-p2 .day.empty { background:transparent !important; box-shadow:none; }
+html.theme-p2 .day.full { background:rgba(0,0,0,.08) !important; }
+html.theme-p2 .stripe { background:rgba(255,255,255,.75) !important; box-shadow:inset 0 0 0 1px rgba(220,220,224,.9) !important; }
+html.theme-p2 .day.today .num { background:linear-gradient(180deg,rgba(255,255,255,.35),rgba(255,255,255,0) 55%), #2a2a2e !important; color:#fff !important; box-shadow:0 0 0 2px #fff, 0 2px 6px rgba(0,0,0,.40); }
+html.theme-p2 .datebox { background:rgba(255,255,255,.7) !important; border-color:rgba(255,255,255,.9) !important; }
+html.theme-p2 .tag { background:rgba(255,255,255,.7) !important; color:#1c1c1f !important; border:1px solid rgba(220,220,224,.9); }
+html.theme-p2 button.primary { background:linear-gradient(180deg,rgba(255,255,255,.25),rgba(255,255,255,0) 55%), #2a2a2e !important; box-shadow:0 4px 12px rgba(0,0,0,.30), inset 0 1px 0 rgba(255,255,255,.35); }
+html.theme-p2 button.fab { border:1px solid rgba(255,255,255,.3) !important; color:#fff !important;
+  background:linear-gradient(180deg,rgba(255,255,255,.32) 0%,rgba(255,255,255,.05) 48%,rgba(255,255,255,0) 52%), linear-gradient(180deg,#48484d,#121214) !important;
+  -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px); box-shadow:0 10px 24px rgba(0,0,0,.40), inset 0 1px 0 rgba(255,255,255,.5) !important; }
+html.theme-p2 .pk { background:rgba(255,255,255,.6) !important; } html.theme-p2 .pk.sel { background:#2a2a2e !important; }
+html.theme-p2 body { background:radial-gradient(60% 40% at 15% 10%, rgba(60,60,66,.22), transparent 70%), radial-gradient(50% 35% at 90% 35%, rgba(160,160,170,.30), transparent 70%), radial-gradient(60% 40% at 30% 85%, rgba(40,40,44,.14), transparent 70%), linear-gradient(180deg,#f3f3f5,#e2e2e6) fixed !important; }
+html.theme-p2 header { background:linear-gradient(180deg,rgba(255,255,255,.22) 0%,rgba(255,255,255,0) 55%), rgba(20,20,22,.80) !important;
+  -webkit-backdrop-filter:blur(18px) saturate(160%); backdrop-filter:blur(18px) saturate(160%);
+  border-bottom:1px solid rgba(255,255,255,.18) !important; box-shadow:0 6px 20px rgba(0,0,0,.30), inset 0 1px 0 rgba(255,255,255,.35) !important; }
+html.theme-p2 #rotCard { border:1px solid rgba(255,255,255,.28) !important; background:linear-gradient(180deg,rgba(255,255,255,.26) 0%,rgba(255,255,255,.06) 38%,rgba(255,255,255,0) 50%), linear-gradient(135deg,rgba(72,72,77,.88) 0%,rgba(30,30,33,.90) 55%,rgba(8,8,10,.94) 100%) !important;
+  -webkit-backdrop-filter:blur(16px) saturate(150%); backdrop-filter:blur(16px) saturate(150%);
+  box-shadow:0 12px 30px rgba(0,0,0,.30), inset 0 1px 0 rgba(255,255,255,.45), inset 0 -1px 0 rgba(0,0,0,.25) !important; }
+html.theme-p2 .rot-row.me { background:rgba(255,255,255,.14) !important; box-shadow:inset 3px 0 0 rgba(255,255,255,.9) !important; }
+html.theme-p2 .rot-badge { background:rgba(255,255,255,.92) !important; color:#1c1c1f !important; box-shadow:0 1px 3px rgba(0,0,0,.2); }
+html.theme-p2 .mon-head { background:linear-gradient(180deg,rgba(255,255,255,.22),rgba(255,255,255,0) 60%), rgba(20,20,22,.80) !important; border:1px solid rgba(255,255,255,.25); }
+
 /* p3 冰川藍：乾淨的冰水藍，不用金屬漸層，跟鈦藍區分開 */
 html.theme-p3 { --bg:#eaf7fa; --card:#ffffff; --text:#0f3a46; --muted:#5b8590; --line:#d3eef5; --accent:#0e7c99; --soft:#f3fbfd; }
 html.theme-p3 body { background:linear-gradient(180deg,#eaf7fa,#d6f0f6) fixed; }
@@ -692,12 +752,38 @@ html.theme-p3 button.fab { border:none !important; color:#fff !important;
   box-shadow:0 8px 20px rgba(14,124,153,.35) !important; }
 html.theme-p3 .pk { background:#f0fafc !important; } html.theme-p3 .pk.sel { background:#0e7c99 !important; }
 
+/* p3 玻璃質感 */
+html.theme-p3 .card:not(#rotCard) { background:rgba(255,255,255,.62) !important; border:1px solid rgba(255,255,255,.85) !important;
+  -webkit-backdrop-filter:blur(14px); backdrop-filter:blur(14px); box-shadow:0 8px 24px rgba(14,124,153,.10), inset 0 1px 0 #fff !important; }
+html.theme-p3 .sheet { background:rgba(251,254,255,.86) !important; -webkit-backdrop-filter:blur(20px); backdrop-filter:blur(20px); }
+html.theme-p3 .nav button { background:rgba(255,255,255,.7) !important; border:1px solid rgba(255,255,255,.9) !important; color:#0e7c99 !important; box-shadow:0 1px 3px rgba(14,124,153,.10), inset 0 1px 0 #fff; }
+html.theme-p3 .day { background:rgba(255,255,255,.55) !important; box-shadow:inset 0 1px 0 rgba(255,255,255,.9); }
+html.theme-p3 .day.weekend, html.theme-p3 .day.empty { background:transparent !important; box-shadow:none; }
+html.theme-p3 .day.full { background:rgba(25,160,190,.14) !important; }
+html.theme-p3 .stripe { background:rgba(255,255,255,.75) !important; box-shadow:inset 0 0 0 1px rgba(205,235,242,.9) !important; }
+html.theme-p3 .day.today .num { background:linear-gradient(180deg,rgba(255,255,255,.35),rgba(255,255,255,0) 55%), #0e7c99 !important; color:#fff !important; box-shadow:0 0 0 2px #fff, 0 2px 6px rgba(14,124,153,.35); }
+html.theme-p3 .datebox { background:rgba(255,255,255,.7) !important; border-color:rgba(255,255,255,.9) !important; }
+html.theme-p3 .tag { background:rgba(255,255,255,.7) !important; color:#0e7c99 !important; border:1px solid rgba(205,235,242,.9); }
+html.theme-p3 button.primary { background:linear-gradient(180deg,rgba(255,255,255,.25),rgba(255,255,255,0) 55%), #0e7c99 !important; box-shadow:0 4px 12px rgba(14,124,153,.18), inset 0 1px 0 rgba(255,255,255,.35); }
+html.theme-p3 button.fab { border:1px solid rgba(255,255,255,.3) !important; color:#fff !important;
+  background:linear-gradient(180deg,rgba(255,255,255,.32) 0%,rgba(255,255,255,.05) 48%,rgba(255,255,255,0) 52%), linear-gradient(180deg,#19a0be,#0e7c99) !important;
+  -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px); box-shadow:0 10px 24px rgba(14,124,153,.35), inset 0 1px 0 rgba(255,255,255,.5) !important; }
+html.theme-p3 .pk { background:rgba(255,255,255,.6) !important; } html.theme-p3 .pk.sel { background:#0e7c99 !important; }
+html.theme-p3 body { background:radial-gradient(60% 40% at 15% 10%, rgba(25,160,190,.22), transparent 70%), radial-gradient(50% 35% at 90% 35%, rgba(143,211,227,.40), transparent 70%), radial-gradient(60% 40% at 30% 85%, rgba(14,124,153,.12), transparent 70%), linear-gradient(180deg,#eef9fb,#dcf2f7) fixed !important; }
+html.theme-p3 header { background:linear-gradient(180deg,rgba(255,255,255,.55) 0%,rgba(255,255,255,0) 60%), rgba(226,246,250,.72) !important;
+  -webkit-backdrop-filter:blur(18px) saturate(170%); backdrop-filter:blur(18px) saturate(170%);
+  border-bottom:1px solid rgba(255,255,255,.85) !important; box-shadow:0 6px 20px rgba(14,124,153,.10), inset 0 1px 0 #fff !important; }
+html.theme-p3 #rotCard { border:1px solid rgba(255,255,255,.95) !important; background:linear-gradient(180deg,rgba(255,255,255,.6) 0%,rgba(255,255,255,.15) 38%,rgba(255,255,255,0) 50%), linear-gradient(135deg,rgba(255,255,255,.78) 0%,rgba(214,240,246,.70) 55%,rgba(160,220,235,.62) 100%) !important;
+  -webkit-backdrop-filter:blur(16px) saturate(160%); backdrop-filter:blur(16px) saturate(160%);
+  box-shadow:0 12px 30px rgba(14,124,153,.18), inset 0 1px 0 #fff, inset 0 -1px 0 rgba(255,255,255,.4) !important; }
+html.theme-p3 .rot-row.me { background:rgba(255,255,255,.6) !important; box-shadow:inset 3px 0 0 #0e7c99 !important; }
+html.theme-p3 .mon-head { background:linear-gradient(180deg,rgba(255,255,255,.7),rgba(255,255,255,.2)), rgba(226,246,250,.72) !important; border:1px solid rgba(255,255,255,.9); }
 </style>
 </head>
 <body>
 
 <!-- 啟動中 -->
-<div id="bootView"><div class="spinner"></div><div id="bootMsg">載入中…</div></div>
+<div id="bootView"><svg class="boot-icon" viewBox="0 0 1024 1024" aria-hidden="true"><defs><linearGradient id="bA" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#16365a"/><stop offset="1" stop-color="#0a1b30"/></linearGradient><linearGradient id="bG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f3dc8a"/><stop offset=".55" stop-color="#c9a227"/><stop offset="1" stop-color="#9c7a16"/></linearGradient></defs><rect width="1024" height="1024" fill="url(#bA)"/><rect x="72" y="72" width="880" height="880" rx="150" fill="none" stroke="#c9a227" stroke-opacity=".35" stroke-width="6"/><text x="512" y="560" text-anchor="middle" font-size="400" font-weight="800" fill="url(#bG)" letter-spacing="10" font-family="Helvetica Neue,Arial,sans-serif">CS</text><rect x="312" y="640" width="400" height="8" fill="#c9a227"/><text x="512" y="770" text-anchor="middle" font-size="96" font-weight="700" fill="#e9d9a6" letter-spacing="40" font-family="Helvetica Neue,Arial,sans-serif">LEAVE</text></svg><div class="boot-name">CS <span>LEAVE</span></div><div class="spinner"></div><div id="bootMsg">載入中…</div></div>
 
 <!-- 登入 -->
 <div id="loginView">
@@ -1592,15 +1678,18 @@ function toggleRot(){
 /* ---------- 設定：主題 ---------- */
 
 const THEMES = [
+  // 深色系
   { id:'c', name:'深藍金', bar:'#0b1f36', card:'#12304f', body:'#fdfcf8', meta:'#0b1f36' },
-  { id:'d', name:'香檳金', bar:'#f8f3e8', card:'#efe2bf', body:'#fbf8f1', meta:'#f8f3e8' },
-  { id:'e', name:'霧藍灰', bar:'#f4f7fa', card:'#d8e3ee', body:'#f6f8fb', meta:'#f4f7fa' },
-  { id:'k',  name:'銀漸層', bar:'linear-gradient(180deg,#fdfdfe,#c9ced5,#e9ebee)', card:'linear-gradient(160deg,#f6f7f9,#cfd4db,#eef0f3,#b9bfc8)', body:'#f7f8fa', meta:'#e3e6ea' },
-  { id:'m4', name:'鈦藍',   bar:'linear-gradient(180deg,#f4f8ff,#c9d7ea,#7f9bc0,#dfe8f5)', card:'linear-gradient(160deg,#f4f8ff,#c9d7ea,#dfe8f5,#7f9bc0)', body:'#f7f9fc', meta:'#c9d7ea' },
-  { id:'m5', name:'槍灰',   bar:'linear-gradient(180deg,#7a7f88,#50555d,#2e3137,#5c616a)', card:'linear-gradient(160deg,#7a7f88,#50555d,#5c616a,#2e3137)', body:'#f6f7f8', meta:'#3a3e45' },
   { id:'p1', name:'酒紅',   bar:'linear-gradient(180deg,#8c3447,#5e1a29,#3a0f1a,#6b2032)', card:'linear-gradient(160deg,#8c3447,#5e1a29,#6b2032,#3a0f1a)', body:'#fbf6f7', meta:'#4a1522' },
   { id:'p2', name:'深邃黑',   bar:'linear-gradient(180deg,#48484d,#2a2a2e,#0c0c0e,#333337)', card:'linear-gradient(160deg,#48484d,#2a2a2e,#333337,#0c0c0e)', body:'#f7f7f8', meta:'#1c1c1f' },
+  // 藍色系
+  { id:'e', name:'霧藍灰', bar:'#f4f7fa', card:'#d8e3ee', body:'#f6f8fb', meta:'#f4f7fa' },
+  { id:'m4', name:'鈦藍',   bar:'linear-gradient(180deg,#f4f8ff,#c9d7ea,#7f9bc0,#dfe8f5)', card:'linear-gradient(160deg,#f4f8ff,#c9d7ea,#dfe8f5,#7f9bc0)', body:'#f7f9fc', meta:'#c9d7ea' },
   { id:'p3', name:'冰川藍', bar:'linear-gradient(180deg,#f4fcfe,#d9f2f8)', card:'linear-gradient(150deg,#fff,#e3f6fa,#c6ecf5)', body:'#eaf7fa', meta:'#e3f6fa' },
+  // 金屬系（金 → 銀 → 灰）
+  { id:'d', name:'香檳金', bar:'#f8f3e8', card:'#efe2bf', body:'#fbf8f1', meta:'#f8f3e8' },
+  { id:'k',  name:'銀漸層', bar:'linear-gradient(180deg,#fdfdfe,#c9ced5,#e9ebee)', card:'linear-gradient(160deg,#f6f7f9,#cfd4db,#eef0f3,#b9bfc8)', body:'#f7f8fa', meta:'#e3e6ea' },
+  { id:'m5', name:'槍灰',   bar:'linear-gradient(180deg,#7a7f88,#50555d,#2e3137,#5c616a)', card:'linear-gradient(160deg,#7a7f88,#50555d,#5c616a,#2e3137)', body:'#f6f7f8', meta:'#3a3e45' },
 ];
 function curTheme(){ const c = document.documentElement.className.match(/theme-(d|e|k|m4|m5|p1|p2|p3)\b/); return c ? c[1] : 'c'; }
 function setTheme(id){
